@@ -1,0 +1,6 @@
+See the documentation about installing tooling: https://golem.cloud/learn/c-sharp
+
+Compile the C# project:
+  dotnet build -p:Configuration=Release
+Convert the result into a Component:
+  wasm-tools component new bin/Release/net7.0/ComponentName.wasm -o component_name.wasm --adapt adapters/tier3/wasi_snapshot_preview1.wasm

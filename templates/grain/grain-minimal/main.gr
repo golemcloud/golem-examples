@@ -1,0 +1,13 @@
+import {parseInt} from "number"
+import {expect} from "result"
+import {fdRead, stdin} from "sys/file"
+
+// Reading the input from stdin
+let (s, _) = expect("failed to read stdin", fdRead(stdin, 10)) // 10 is the maximum number of bytes to read
+let n = expect("failed to parse input", parseInt(s, 10))  // 10 is the radix
+
+let result = 2 * n
+
+// Returning a result throught stdout
+print(toString(result))
+
