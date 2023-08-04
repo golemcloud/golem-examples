@@ -32,7 +32,7 @@ The following fields are optional:
 
 Golem templates are currently simple and not using any known template language, in order to keep the templates **compilable** as they are - this makes it very convenient to work on existing ones and add new templates as you can immediately verify that it can be compiled into a _Golem component_. 
 
-When calling `golem-new` the user specifies a **component name**. The provided component name must use either `PascalCase`, `snake_case` or `kebab-space`.
+When calling `golem-new` the user specifies a **component name**. The provided component name must use either `PascalCase`, `snake_case` or `kebab-case`.
 
 There is an optional parameter for defining a **package name**, which defaults to `golem:component`. It has to be in the `pack:name` format.
 
