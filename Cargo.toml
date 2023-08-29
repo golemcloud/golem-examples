@@ -1,0 +1,31 @@
+[package]
+name = "golem-examples"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+homepage = "https://golem.cloud"
+description = "Golem example templates"
+
+[dependencies]
+derive_more = "0.99.17"
+include_dir = { version = "0.7.3" }
+Inflector = { version = "0.11.4" }
+once_cell = { version = "1.18.0" }
+fancy-regex = { version = "0.11.0" }
+serde = { version = "1.0.180", features = ["derive"] }
+serde_json = { version = "1.0.104" }
+strum = "0.25.0"
+strum_macros = "0.25.1"
+
+clap = { version = "4.3.19", features = ["derive"], optional = true }
+
+[features]
+build-binary = ["clap"]
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "golem-examples-cli"
+path = "src/cli.rs"
+required-features = ["build-binary"]

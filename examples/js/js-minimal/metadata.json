@@ -1,0 +1,8 @@
+{
+  "description": "A simple stateless Golem function written in JavaScript with no dependencies on external services",
+  "requiresAdapter": true,
+  "exclude": [
+    "component_name.module.wasm",
+    "component_name.wasm"
+  ]
+}

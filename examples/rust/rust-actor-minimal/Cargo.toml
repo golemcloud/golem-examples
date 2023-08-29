@@ -1,0 +1,21 @@
+[package]
+name = "component-name"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+name = "lib"
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = 's'
+
+[dependencies]
+wit-bindgen = "0.7.0"
+
+[package.metadata.component.target]
+path = "wit"
+
+[package.metadata.component.dependencies]
