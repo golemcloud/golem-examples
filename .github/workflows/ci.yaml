@@ -70,10 +70,12 @@ jobs:
         with:
           toolchain: stable
           override: true
+      - id: get_version
+        uses: battila7/get-version-action@v2
       - name: Publish crate
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
         run: |        
-          export VERSION=${{ github.event.release.tag_name }}
+          export VERSION="${{ steps.get_version.outputs.version-without-v }}"
           sed -i "s/0.0.0/$VERSION/g" Cargo.toml
           cargo publish --all-features --allow-dirty
