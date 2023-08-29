@@ -1,9 +1,0 @@
-{
-  "description": "A simple stateless Golem function written in |Grain with no dependencies on external services",
-  "requiresAdapter": true,
-  "exclude": [
-    "main.gr.wasm",
-    "component_name.wasm",
-    "target"
-  ]
-}

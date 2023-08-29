@@ -1,0 +1,7 @@
+{
+  "description": "A simple stateful Golem actor written in Rust with no dependencies on external services",
+  "requiresAdapter": false,
+  "exclude": [
+    "target"
+  ]
+}

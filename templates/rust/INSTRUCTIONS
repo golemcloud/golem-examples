@@ -1,6 +1,0 @@
-See the documentation about installing common tooling: https://golem.cloud/learn/rust
-
-Compile the Rust component with cargo-component:
-  cargo component build --release
-The result in target/wasm32-wasi/release/lib.wasm is ready to be used with Golem!
-
