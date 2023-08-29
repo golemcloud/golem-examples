@@ -1,13 +1,13 @@
+use derive_more::FromStr;
+use fancy_regex::{Match, Regex};
+use inflector::Inflector;
+use once_cell::sync::Lazy;
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
 use std::fmt::Formatter;
 use std::path::PathBuf;
 use std::str::FromStr;
-use derive_more::FromStr;
-use inflector::Inflector;
-use once_cell::sync::Lazy;
-use fancy_regex::{Match, Regex};
-use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
@@ -26,17 +26,16 @@ impl TemplateName {
     }
 
     pub fn parts(&self) -> Vec<String> {
-        let matches: Vec<Result<Match, fancy_regex::Error>> = TEMPLATE_NAME_SPLIT_REGEX.find_iter(&self.0).collect();
+        let matches: Vec<Result<Match, fancy_regex::Error>> =
+            TEMPLATE_NAME_SPLIT_REGEX.find_iter(&self.0).collect();
         let mut parts: Vec<&str> = vec![];
         let mut last = 0;
-        for m in matches {
-            if let Ok(m) = m {
-                let part = &self.0[last..m.start()];
-                if !part.is_empty() {
-                    parts.push(part);
-                }
-                last = m.end();
+        for m in matches.into_iter().flatten() {
+            let part = &self.0[last..m.start()];
+            if !part.is_empty() {
+                parts.push(part);
             }
+            last = m.end();
         }
         parts.push(&self.0[last..]);
 
@@ -44,7 +43,7 @@ impl TemplateName {
         for part in parts {
             let s = part.to_lowercase();
             let s = s.strip_prefix('-').unwrap_or(&s);
-            let s = s.strip_prefix('_').unwrap_or(&s);
+            let s = s.strip_prefix('_').unwrap_or(s);
             result.push(s.to_string());
         }
         result
@@ -98,7 +97,7 @@ impl GuestLanguage {
             "swift" => Some(GuestLanguage::Swift),
             "grain" => Some(GuestLanguage::Grain),
             "py" | "python" => Some(GuestLanguage::Python),
-            _ => None
+            _ => None,
         }
     }
 
@@ -126,7 +125,7 @@ impl GuestLanguage {
             GuestLanguage::CSharp => "C#",
             GuestLanguage::Swift => "Swift",
             GuestLanguage::Grain => "Grain",
-            GuestLanguage::Python => "Python"
+            GuestLanguage::Python => "Python",
         }
     }
 }
@@ -142,11 +141,10 @@ impl FromStr for GuestLanguage {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         GuestLanguage::from_string(s).ok_or({
-            let all =
-                GuestLanguage::iter()
-                    .map(|x| format!("\"{x}\""))
-                    .collect::<Vec<String>>()
-                    .join(", ");
+            let all = GuestLanguage::iter()
+                .map(|x| format!("\"{x}\""))
+                .collect::<Vec<String>>()
+                .join(", ");
             format!("Unknown guest language: {s}. Expected one of {all}")
         })
     }
@@ -167,7 +165,7 @@ impl GuestLanguageTier {
             "tier2" | "2" => Some(GuestLanguageTier::Tier2),
             "tier3" | "3" => Some(GuestLanguageTier::Tier3),
             "tier4" | "4" => Some(GuestLanguageTier::Tier4),
-            _ => None
+            _ => None,
         }
     }
 
@@ -176,7 +174,7 @@ impl GuestLanguageTier {
             GuestLanguageTier::Tier1 => 1,
             GuestLanguageTier::Tier2 => 2,
             GuestLanguageTier::Tier3 => 3,
-            GuestLanguageTier::Tier4 => 4
+            GuestLanguageTier::Tier4 => 4,
         }
     }
 
@@ -196,7 +194,6 @@ impl fmt::Display for GuestLanguageTier {
     }
 }
 
-
 impl FromStr for GuestLanguageTier {
     type Err = String;
 
@@ -213,28 +210,28 @@ impl PackageName {
         let parts: Vec<&str> = s.as_ref().split(':').collect();
         match parts.as_slice() {
             &[n1, n2] => Some(PackageName((n1.to_string(), n2.to_string()))),
-            _ => None
+            _ => None,
         }
     }
 
     pub fn to_pascal_case(&self) -> String {
-        format!("{}{}", self.0.0.to_title_case(), self.0.1.to_title_case())
+        format!("{}{}", self.0 .0.to_title_case(), self.0 .1.to_title_case())
     }
 
     pub fn to_snake_case(&self) -> String {
-        format!("{}_{}", self.0.0, self.0.1)
+        format!("{}_{}", self.0 .0, self.0 .1)
     }
 
     pub fn to_string_with_double_colon(&self) -> String {
-        format!("{}::{}", self.0.0, self.0.1)
+        format!("{}::{}", self.0 .0, self.0 .1)
     }
 
     pub fn to_string_with_colon(&self) -> String {
-        format!("{}:{}", self.0.0, self.0.1)
+        format!("{}:{}", self.0 .0, self.0 .1)
     }
 
     pub fn to_string_with_slash(&self) -> String {
-        format!("{}/{}", self.0.0, self.0.1)
+        format!("{}/{}", self.0 .0, self.0 .1)
     }
 }
 
@@ -248,7 +245,9 @@ impl FromStr for PackageName {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        PackageName::from_string(s).ok_or(format!("Unexpected package name {s}. Must be in 'pack:name' format"))
+        PackageName::from_string(s).ok_or(format!(
+            "Unexpected package name {s}. Must be in 'pack:name' format"
+        ))
     }
 }
 
@@ -304,8 +303,8 @@ pub(crate) struct ExampleMetadata {
 
 #[cfg(test)]
 mod tests {
-    use once_cell::sync::Lazy;
     use crate::model::{PackageName, TemplateName};
+    use once_cell::sync::Lazy;
 
     static N1: Lazy<TemplateName> = Lazy::new(|| TemplateName::new("my-test-template"));
     static N2: Lazy<TemplateName> = Lazy::new(|| TemplateName::new("MyTestTemplate"));
@@ -345,7 +344,6 @@ mod tests {
     }
 
     static P1: Lazy<PackageName> = Lazy::new(|| PackageName::from_string("foo:bar").unwrap());
-
 
     #[test]
     pub fn package_name_to_pascal_case() {
