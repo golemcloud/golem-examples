@@ -71,7 +71,6 @@ jobs:
           toolchain: stable
           override: true
       - name: Publish crate
-        working-directory: golem-client
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
         run: cargo publish --all-features
