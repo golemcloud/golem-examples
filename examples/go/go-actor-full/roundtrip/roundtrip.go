@@ -8,8 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"golem.com/tinygo_wasi/tinygo_wasi"
-	go_wasi_http "golem.com/tinygo_wasi/tinygo_wasi"
+	go_wasi_http "pack/name/component_name"
 )
 
 type WasiHttpTransport struct {
@@ -220,7 +219,7 @@ func (reader WasiStreamReader) Read(p []byte) (int, error) {
 
 	tuple := result.Unwrap()
 	var err error
-	if tuple.F1 == tinygo_wasi.WasiIoStreamsStreamStatusEnded() {
+	if tuple.F1 == go_wasi_http.WasiIoStreamsStreamStatusEnded() {
 		err = io.EOF
 	} else {
 		err = nil
