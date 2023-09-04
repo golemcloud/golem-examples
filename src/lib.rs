@@ -74,6 +74,7 @@ impl Examples for GolemExamples {
                     .target_path
                     .join(parameters.template_name.as_string())
                     .join("adapters")
+                    .join(example.language.tier().name())
                     .join(adapter_path.file_name().unwrap().to_str().unwrap()),
             )?;
         }
