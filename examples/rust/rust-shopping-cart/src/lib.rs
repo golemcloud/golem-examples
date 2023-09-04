@@ -1,8 +1,10 @@
-use bindings::*;
-use exports::pack::name::api::*;
+cargo_component_bindings::generate!();
+
+use crate::bindings::exports::pack::name::api::*;
+
 use rand::prelude::*;
 
-struct ComponentNameImpl;
+struct Component;
 
 /**
  * This is one of any number of data types that our application
@@ -76,7 +78,7 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 }
 
 // Here, we declare a Rust implementation of the `ShoppingCart` trait.
-impl Api for ComponentNameImpl {
+impl Guest for Component {
     fn initialize_cart(user_id: String) -> () {
         with_state(|state| {
             println!("Initializing cart for user {}", user_id);
@@ -156,5 +158,3 @@ impl Api for ComponentNameImpl {
         })
     }
 }
-
-bindings::export!(ComponentNameImpl);

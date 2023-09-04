@@ -5,7 +5,6 @@ edition = "2021"
 
 [lib]
 path = "src/lib.rs"
-name = "lib"
 crate-type = ["cdylib"]
 
 [profile.release]
@@ -13,7 +12,7 @@ lto = true
 opt-level = 's'
 
 [dependencies]
-wit-bindgen = "0.7.0"
+cargo-component-bindings = { git = "https://github.com/bytecodealliance/cargo-component", rev = "e57d1d1405ed2d76f1f3d8647480dea700379ff8" }
 
 [package.metadata.component.target]
 path = "wit"

@@ -5,7 +5,6 @@ edition = "2021"
 
 [lib]
 path = "src/lib.rs"
-name = "lib"
 crate-type = ["cdylib"]
 
 [profile.release]
@@ -13,10 +12,11 @@ lto = true
 opt-level = 's'
 
 [dependencies]
-wit-bindgen = "0.7.0"
+cargo-component-bindings = { git = "https://github.com/bytecodealliance/cargo-component", rev = "e57d1d1405ed2d76f1f3d8647480dea700379ff8" }
+
 fs = "0.0.5"
 rand = "0.8.5"
-reqwest = { git = "https://github.com/zivergetech/reqwest", branch = "initial-wasi-impl", features = ["json"] }
+reqwest = { git = "https://github.com/zivergetech/reqwest", branch = "update-aug-2023", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 time = { version = "0.3.21", features = ["formatting"] }

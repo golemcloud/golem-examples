@@ -1,11 +1,13 @@
-use bindings::*;
+cargo_component_bindings::generate!();
+
+use crate::bindings::exports::pack::name::api::*;
+
 use chrono::{DateTime, NaiveDateTime, Utc};
-use exports::pack::name::api::*;
 use once_cell::sync::Lazy;
 use std::{cmp, collections::HashMap, num::TryFromIntError};
 use uuid::Uuid;
 
-struct ComponentNameImpl;
+struct Component;
 
 /**
  * This is one of any number of data types that our application
@@ -70,7 +72,7 @@ impl ExtensionsForUpdateItem for UpdateItem {
     }
 }
 
-impl Api for ComponentNameImpl {
+impl Guest for Component {
     fn add(item: NewItem) -> Result<Item, String> {
         let title = item.title.trim();
 
@@ -308,5 +310,3 @@ impl Api for ComponentNameImpl {
         })
     }
 }
-
-bindings::export!(ComponentNameImpl);
