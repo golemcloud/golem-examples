@@ -3,12 +3,18 @@ const Builder = std.build.Builder;
 const CrossTarget = std.zig.CrossTarget;
 
 pub fn build(b: *Builder) void {
-    // Standard release options allow the person running `zig build` to select
-    // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
-    const mode = b.standardReleaseOptions();
+    const optimize = b.standardOptimizeOption(.{
+        .preferred_optimize_mode = .ReleaseSmall,
+    });
 
-    const exe = b.addExecutable("main", "src/main.zig");
-    exe.setTarget(CrossTarget{ .cpu_arch = .wasm32, .os_tag = .wasi });
-    exe.setBuildMode(mode);
-    exe.install();
+    const exe = b.addExecutable(.{
+        .name = "main",
+        .root_source_file = .{ .path = "src/main.zig" },
+        .target = .{
+            .cpu_arch = .wasm32,
+            .os_tag = .wasi,
+        },
+        .optimize = optimize
+    });
+    b.installArtifact(exe);
 }

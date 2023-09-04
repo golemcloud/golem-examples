@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	go_wasi_http "pack/name/component_name"
+
+	"golem.com/tinygo_wasi/tinygo_wasi"
+	go_wasi_http "golem.com/tinygo_wasi/tinygo_wasi"
 )
 
 type WasiHttpTransport struct {
@@ -55,6 +57,10 @@ func (t WasiHttpTransport) RoundTrip(request *http.Request) (*http.Response, err
 
 	path := request.URL.Path
 	query := request.URL.RawQuery
+	pathAndQuery := path
+	if query != "" {
+		pathAndQuery += "?" + query
+	}
 
 	var scheme go_wasi_http.WasiHttpTypesScheme
 	switch strings.ToLower(request.URL.Scheme) {
@@ -76,10 +82,9 @@ func (t WasiHttpTransport) RoundTrip(request *http.Request) (*http.Response, err
 
 	requestHandle := go_wasi_http.WasiHttpTypesNewOutgoingRequest(
 		method,
-		path,
-		query,
+		go_wasi_http.Some[string](pathAndQuery),
 		go_wasi_http.Some[go_wasi_http.WasiHttpTypesScheme](scheme),
-		authority,
+		go_wasi_http.Some[string](authority),
 		headers,
 	)
 	defer go_wasi_http.WasiHttpTypesDropOutgoingRequest(requestHandle)
@@ -140,7 +145,7 @@ func (t WasiHttpTransport) RoundTrip(request *http.Request) (*http.Response, err
 
 	for _, tuple := range responseHeaderEntries {
 		ck := http.CanonicalHeaderKey(tuple.F0)
-		header[ck] = append(header[ck], tuple.F1)
+		header[ck] = append(header[ck], string(tuple.F1))
 	}
 
 	var contentLength int64
@@ -215,7 +220,7 @@ func (reader WasiStreamReader) Read(p []byte) (int, error) {
 
 	tuple := result.Unwrap()
 	var err error
-	if tuple.F1 {
+	if tuple.F1 == tinygo_wasi.WasiIoStreamsStreamStatusEnded() {
 		err = io.EOF
 	} else {
 		err = nil
