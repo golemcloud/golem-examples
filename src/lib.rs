@@ -17,7 +17,7 @@ pub struct GolemExamples {}
 
 static EXAMPLES: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/examples");
 static ADAPTERS: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/golem-wit/adapters");
-static WIT: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/golem-wit/wit");
+static WIT: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/golem-wit/wit/deps");
 
 impl Examples for GolemExamples {
     fn list_all_examples() -> Vec<Example> {
