@@ -1,5 +1,6 @@
-use bindings::*;
-use exports::pack::name::api::*;
+cargo_component_bindings::generate!();
+
+use crate::bindings::exports::pack::name::api::*;
 use lib::core;
 
 struct AppState(usize);
@@ -10,9 +11,9 @@ fn with_app_state<T>(f: impl FnOnce(&mut AppState) -> T) -> T {
     unsafe { f(&mut APP_STATE) }
 }
 
-struct ComponentNameImpl;
+struct Component;
 
-impl Api for ComponentNameImpl {
+impl Guest for Component {
     fn hello() -> String {
         with_app_state(|state| {
             let (n, message) = core::hello(state.0);
@@ -23,5 +24,3 @@ impl Api for ComponentNameImpl {
         })
     }
 }
-
-bindings::export!(ComponentNameImpl);

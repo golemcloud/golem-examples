@@ -1,7 +1,8 @@
-use bindings::*;
-use exports::pack::name::api::*;
+cargo_component_bindings::generate!();
 
-use golem::api::host::*;
+use crate::bindings::exports::pack::name::api::*;
+use crate::bindings::golem::api::host::*;
+
 use reqwest::{Client, Response};
 use serde::{Deserialize, Serialize};
 
@@ -35,9 +36,9 @@ struct ResponseBody {
     message: String,
 }
 
-struct ComponentNameImpl;
+struct Component;
 
-impl Api for ComponentNameImpl {
+impl Guest for Component {
     /// Updates the component's state by adding the given value to the total.
     fn add(value: u64) {
         with_state(|state| state.total += value);
@@ -72,5 +73,3 @@ impl Api for ComponentNameImpl {
         golem_await_promise(&promise_id);
     }
 }
-
-bindings::export!(ComponentNameImpl);

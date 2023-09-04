@@ -1,5 +1,6 @@
-use bindings::*;
-use exports::pack::name::api::*;
+cargo_component_bindings::generate!();
+
+use crate::bindings::exports::pack::name::api::*;
 
 /// This is one of any number of data types that our application
 /// uses. Golem will take care to persist all application state,
@@ -21,9 +22,9 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
     unsafe { f(&mut STATE) }
 }
 
-struct ComponentNameImpl;
+struct Component;
 
-impl Api for ComponentNameImpl {
+impl Guest for Component {
     fn add(value: u64) {
         with_state(|state| state.total += value);
     }
@@ -32,5 +33,3 @@ impl Api for ComponentNameImpl {
         with_state(|state| state.total)
     }
 }
-
-bindings::export!(ComponentNameImpl);
