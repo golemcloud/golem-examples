@@ -110,7 +110,7 @@ fn instantiate_directory(
     {
         let name = entry.path().file_name().unwrap().to_str().unwrap();
         if !excludes.contains(name) && (!filter_metadata || name != "metadata.json") {
-            let name = transform(name, parameters);
+            let name = file_name_transform(name, parameters);
             match entry {
                 DirEntry::Dir(dir) => {
                     instantiate_directory(
@@ -197,6 +197,10 @@ fn transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> String {
         .replace("pack_name", &parameters.package_name.to_snake_case())
         .replace("pack/name", &parameters.package_name.to_string_with_slash())
         .replace("PackName", &parameters.package_name.to_pascal_case())
+}
+
+fn file_name_transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> String {
+    transform(str, parameters).replace("Cargo.toml._", "Cargo.toml") // HACK because cargo package ignores every subdirectory containing a Cargo.toml
 }
 
 fn parse_example(
