@@ -200,8 +200,7 @@ fn transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> String {
 }
 
 fn file_name_transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> String {
-    transform(str, parameters)
-        .replace("Cargo.toml._", "Cargo.toml") // HACK because cargo package ignores every subdirectory containing a Cargo.toml
+    transform(str, parameters).replace("Cargo.toml._", "Cargo.toml") // HACK because cargo package ignores every subdirectory containing a Cargo.toml
 }
 
 fn parse_example(
