@@ -46,6 +46,8 @@ jobs:
         run: cargo clippy -- -Dwarnings
       - name: Tests
         run: cargo test --all-features
+      - name: List bundled examples
+        run: cargo run --features=build-binary list-templates
   publish:
     needs: [ build ]
     if: "startsWith(github.ref, 'refs/tags/v')"
