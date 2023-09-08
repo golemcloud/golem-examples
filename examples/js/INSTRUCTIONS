@@ -1,6 +1,7 @@
 See the documentation about installing tooling: https://golem.cloud/learn/javascript
 
-Compile the JavaScript project with Javy:
-  javy compile main.js -o component_name.module.wasm
-Convert the result into a Component:
-  wasm-tools component new component_name.module.wasm -o component_name.wasm --adapt adapters/tier3/wasi_snapshot_preview1.wasm
+Compile the JavaScript project with npm:
+  npm install
+  npm run build
+
+The `out/component_name.wasm` file is ready to be uploaded to Golem Cloud!
