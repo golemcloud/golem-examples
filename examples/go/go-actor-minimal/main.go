@@ -13,7 +13,6 @@ func init() {
 var total uint64
 
 type ComponentNameImpl struct {
-    total uint64
 }
 
 // Implementation of the exported interface
