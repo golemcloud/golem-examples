@@ -8,9 +8,7 @@ interface api {
     done,
   }
 
-  // Currently use `flags` type simply to gain the Ord typeclass instance.
-  // Once enum type derives Ord, switch to enum for more appropriate semantics.
-  flags priority {
+  enum priority {
     low,
     medium,
     high,

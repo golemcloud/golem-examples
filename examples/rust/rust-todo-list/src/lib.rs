@@ -71,6 +71,18 @@ impl ExtensionsForUpdateItem for UpdateItem {
             || self.deadline.is_some()
     }
 }
+trait Ordinal {
+    fn ordinal(&self) -> u8;
+}
+impl Ordinal for Priority {
+    fn ordinal(&self) -> u8 {
+        match self {
+            Priority::Low => 0,
+            Priority::Medium => 1,
+            Priority::High => 2,
+        }
+    }
+}
 
 impl Guest for Component {
     fn add(item: NewItem) -> Result<Item, String> {
@@ -209,7 +221,7 @@ impl Guest for Component {
 
             match query.sort {
                 Some(QuerySort::Priority) => {
-                    result.sort_by_key(|item| cmp::Reverse(item.priority));
+                    result.sort_by_key(|item| cmp::Reverse(item.priority.ordinal()));
                 }
                 Some(QuerySort::Deadline) => {
                     result.sort_by_key(|item| cmp::Reverse(item.deadline));
@@ -231,7 +243,7 @@ impl Guest for Component {
                         .deadline
                         .and_then(|i: i64| NaiveDateTime::from_timestamp_opt(i, 0))
                         .map(|utc| {
-                            DateTime::<Utc>::from_utc(utc, Utc)
+                            DateTime::<Utc>::from_naive_utc_and_offset(utc, Utc)
                                 .format(DATE_TIME_FORMAT)
                                 .to_string()
                         })
