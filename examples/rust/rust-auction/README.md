@@ -58,18 +58,28 @@ exports:
 
 We're almost ready to create our first worker. We just need one more thing which is our authorization token, which the auction registry will need to have access to in order to create new auction workers on our behalf.
 
-We can get it like this:
+We can create one like this:
 
 ```bash
-golem-cli token list
+golem-cli token add
 ```
 
-This token gives the ability to interact with Golem services on your behalf so be careful sharing it!
+```
+data:
+  id: e1d988ad-e9eb-4814-baf6-e73b6de18773
+  accountId: 920d1d70-424b-406a-8e45-0181ce56ed9b
+  createdAt: 2023-10-05T20:07:03.118470664Z
+  expiresAt: 2100-01-01T00:00:00Z
+secret:
+  value: 07db308e-3721-432d-9aa2-0a6390e0781c
+```
+
+The token secret gives the ability to interact with Golem services on your behalf so be careful sharing it!
 
 With this we have everything we need to deploy our auction service. We can create our auction registry work like this:
 
 ```bash
-golem-cli worker add --template-name auction-registry-1 --worker-name auction-registry -1 --env "GOLEM_AUTHORIZATION_TOKEN"="********-****-****-****-************" --env "AUCTION_TEMPLATE_ID"="69dd184e-1fef-4925-800c-8a0d91ef2ef3"
+golem-cli worker add --template-name auction-registry-1 --worker-name auction-registry -1 --env "GOLEM_TOKEN_SECRET"="07db308e-3721-432d-9aa2-0a6390e0781c" --env "AUCTION_TEMPLATE_ID"="69dd184e-1fef-4925-800c-8a0d91ef2ef3"
 ```
 
 ```

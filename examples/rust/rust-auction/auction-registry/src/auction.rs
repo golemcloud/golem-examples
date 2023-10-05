@@ -18,7 +18,7 @@ fn create_worker(auction_id: AuctionId) {
         template_id
     );
     let body = CreateWorkerBody::new(format!("auction-{}", auction_id.auction_id));
-    let token = env::var("GOLEM_AUTHORIZATION_TOKEN").unwrap();
+    let token = env::var("GOLEM_TOKEN_SECRET").unwrap();
     let response = client
         .post(url)
         .json(&body)
@@ -36,7 +36,7 @@ fn get_invocation_key(auction_id: AuctionId) -> InvocationKey {
         "https://release.api.golem.cloud/v1/templates/{}/workers/{}/key",
         template_id, worker_id
     );
-    let token = env::var("GOLEM_AUTHORIZATION_TOKEN").unwrap();
+    let token = env::var("GOLEM_TOKEN_SECRET").unwrap();
     let response = client
         .post(url)
         .header("Authorization", format!("Bearer {}", token))
@@ -52,7 +52,7 @@ fn initialize_worker(auction: Auction, invocation_key: InvocationKey) {
     let worker_id = format!("auction-{}", auction.auction_id.auction_id);
     let url = format!("https://release.api.golem.cloud/v1/templates/{}/workers/{}/invoke-and-await", template_id, worker_id);
     let body = InitializeWorkerBody::new(auction);
-    let token = env::var("GOLEM_AUTHORIZATION_TOKEN").unwrap();
+    let token = env::var("GOLEM_TOKEN_SECRET").unwrap();
     let function = "golem:template/api/initialize";
     let query_params = InitializeWorkerQueryParams::new(invocation_key, function.to_string());
     let response = client
