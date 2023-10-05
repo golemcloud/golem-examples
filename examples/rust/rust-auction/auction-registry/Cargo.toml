@@ -1,0 +1,21 @@
+[package]
+name = "auction-registry"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+once_cell = "1.17.1"
+rand = "0.8.5"
+uuid = { version = "1.4.1", features = ["v4", "serde"] }
+cargo-component-bindings = { git = "https://github.com/bytecodealliance/cargo-component", rev = "e57d1d1405ed2d76f1f3d8647480dea700379ff8" }
+reqwest = { git = "https://github.com/zivergetech/reqwest", branch = "update-aug-2023", features = ["json"] }
+serde = { version = "1.0.130", features = ["derive"] }
+
+[package.metadata.component.target]
+path = "wit"
+
+[package.metadata.component.dependencies]
