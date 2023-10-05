@@ -1,0 +1,8 @@
+{
+  "description": "An auction application demonstrating communication between multiple Golem workers",
+  "requiresAdapter": false,
+  "requiresGolemHostWIT": false,
+  "exclude": [
+    "target"
+  ]
+}

@@ -1,0 +1,31 @@
+package pack:name
+
+interface api {
+  record bidder-id {
+    bidder-id: string,
+  }
+
+  record auction-id {
+    auction-id: string,
+  }
+
+  type deadline = u64
+
+  record auction {
+    auction-id: auction-id,
+    name: string,
+    description: string,
+    limit-price: float32,
+    expiration: deadline,
+  }
+
+  create-bidder: func(name: string, address: string) -> bidder-id
+
+  create-auction: func(name: string, description: string, limit-price: float32, expiration: deadline) -> auction-id
+
+  get-auctions: func() -> list<auction>
+}
+
+world auction-registry {
+  export api
+}
