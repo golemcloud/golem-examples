@@ -1,0 +1,8 @@
+{
+  "description": "A stateful Golem actor representing a shopping cart, implemented in Scala 2",
+  "requiresAdapter": true,
+  "exclude": [
+    "target",
+    "node_modules"
+  ]
+}
