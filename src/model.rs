@@ -83,6 +83,7 @@ pub enum GuestLanguage {
     Swift,
     Grain,
     Python,
+    Scala2,
 }
 
 impl GuestLanguage {
@@ -97,6 +98,7 @@ impl GuestLanguage {
             "swift" => Some(GuestLanguage::Swift),
             "grain" => Some(GuestLanguage::Grain),
             "py" | "python" => Some(GuestLanguage::Python),
+            "scala2" => Some(GuestLanguage::Scala2),
             _ => None,
         }
     }
@@ -112,6 +114,7 @@ impl GuestLanguage {
             GuestLanguage::Swift => GuestLanguageTier::Tier3,
             GuestLanguage::Grain => GuestLanguageTier::Tier3,
             GuestLanguage::Python => GuestLanguageTier::Tier2,
+            GuestLanguage::Scala2 => GuestLanguageTier::Tier2,
         }
     }
 
@@ -126,6 +129,7 @@ impl GuestLanguage {
             GuestLanguage::Swift => "Swift",
             GuestLanguage::Grain => "Grain",
             GuestLanguage::Python => "Python",
+            GuestLanguage::Scala2 => "Scala 2",
         }
     }
 }
