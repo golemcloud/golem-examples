@@ -1,5 +1,5 @@
 {
-  "description": "A stateful Golem actor representing a shopping cart, implemented in Scala 2",
+  "description": "A stateful Golem actor representing a shopping cart, implemented in Scala 2 using Scala.js",
   "requiresAdapter": true,
   "exclude": [
     "target",
