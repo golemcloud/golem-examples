@@ -228,13 +228,14 @@ fn parse_example(
         wit_deps.push(Path::new("golem").to_path_buf());
     }
     if metadata.requires_wasi.unwrap_or(false) {
+        wit_deps.push(Path::new("blobstore").to_path_buf());
         wit_deps.push(Path::new("cli").to_path_buf());
         wit_deps.push(Path::new("clocks").to_path_buf());
         wit_deps.push(Path::new("filesystem").to_path_buf());
         wit_deps.push(Path::new("http").to_path_buf());
         wit_deps.push(Path::new("io").to_path_buf());
+        wit_deps.push(Path::new("keyvalue").to_path_buf());
         wit_deps.push(Path::new("logging").to_path_buf());
-        wit_deps.push(Path::new("poll").to_path_buf());
         wit_deps.push(Path::new("random").to_path_buf());
         wit_deps.push(Path::new("sockets").to_path_buf());
     }
