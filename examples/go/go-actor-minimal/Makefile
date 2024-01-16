@@ -6,7 +6,7 @@ bindings:
 	wit-bindgen tiny-go --out-dir component_name ./wit
 
 compile: bindings
-	tinygo build -target=wasi -o component_name.module.wasm main.go
+	tinygo build -target=wasi -tags=purego -o component_name.module.wasm main.go
 
 clean:
 	rm -rf component_name

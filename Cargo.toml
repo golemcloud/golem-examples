@@ -10,14 +10,14 @@ description = "Golem example templates"
 derive_more = "0.99.17"
 include_dir = { version = "0.7.3" }
 Inflector = { version = "0.11.4" }
-once_cell = { version = "1.18.0" }
-fancy-regex = { version = "0.11.0" }
-serde = { version = "1.0.180", features = ["derive"] }
-serde_json = { version = "1.0.104" }
+once_cell = { version = "1.19.0" }
+fancy-regex = { version = "0.13.0" }
+serde = { version = "1.0.195", features = ["derive"] }
+serde_json = { version = "1.0.111" }
 strum = "0.25.0"
-strum_macros = "0.25.1"
+strum_macros = "0.25.3"
 
-clap = { version = "4.3.19", features = ["derive"], optional = true }
+clap = { version = "4.4.17", features = ["derive"], optional = true }
 
 [features]
 build-binary = ["clap"]

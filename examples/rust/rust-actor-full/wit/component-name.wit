@@ -1,16 +1,16 @@
-package pack:name
+package pack:name;
 
 // See https://github.com/WebAssembly/component-model/blob/main/design/mvp/WIT.md for more details about the WIT syntax
 
 interface api {
-  add: func(value: u64)
-  get: func() -> u64
-  publish: func() -> result<_, string>
-  pause: func()
+  add: func(value: u64);
+  get: func() -> u64;
+  publish: func() -> result<_, string>;
+  pause: func();
 }
 
 world component-name {
-  import golem:api/host
+  import golem:api/host;
 
-  export api
+  export api;
 }
