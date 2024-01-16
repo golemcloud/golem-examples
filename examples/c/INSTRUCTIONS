@@ -1,7 +1,7 @@
 See the documentation about installing tooling: https://golem.cloud/learn/c
 
 Generate bindings from WIT:
-  wit-bindgen c ./wit
+  wit-bindgen c --autodrop-borrows yes ./wit
 Compile the C code with WASI SDK:
   ~/wasi-sdk-20.0/bin/clang --sysroot ~/wasi-sdk-20.0/share/wasi-sysroot main.c component_name.c component_name_component_type.o -o component_name.module.wasm
 Convert the result into a Component:

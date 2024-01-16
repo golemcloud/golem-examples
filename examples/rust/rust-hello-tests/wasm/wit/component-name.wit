@@ -1,11 +1,11 @@
-package pack:name
+package pack:name;
 
 interface api {
 
-  hello: func() -> string
+  hello: func() -> string;
 
 }
 
 world component-name {
-  export api
+  export api;
 }

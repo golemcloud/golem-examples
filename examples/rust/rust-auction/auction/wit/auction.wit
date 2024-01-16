@@ -1,4 +1,4 @@
-package pack:name
+package pack:name;
 
 interface api {
   record bidder-id {
@@ -9,7 +9,7 @@ interface api {
     auction-id: string,
   }
 
-  type deadline = u64
+  type deadline = u64;
 
   record auction {
     auction-id: auction-id,
@@ -25,13 +25,13 @@ interface api {
     success,
   }
 
-  initialize: func(auction: auction) -> ()
+  initialize: func(auction: auction) -> ();
 
-  bid: func(bidder-id: bidder-id, price: float32) -> bid-result
+  bid: func(bidder-id: bidder-id, price: float32) -> bid-result;
 
-  close-auction: func() -> option<bidder-id>
+  close-auction: func() -> option<bidder-id>;
 }
 
 world auction {
-  export api
+  export api;
 }

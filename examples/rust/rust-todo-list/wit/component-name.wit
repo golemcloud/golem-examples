@@ -1,4 +1,4 @@
-package pack:name
+package pack:name;
 
 interface api {
 
@@ -51,24 +51,24 @@ interface api {
     limit: option<u32>,
   }
 
-  add: func(item: new-item) -> result<item, string>
+  add: func(item: new-item) -> result<item, string>;
 
-  update: func(id: string, change: update-item) -> result<item, string>
+  update: func(id: string, change: update-item) -> result<item, string>;
 
-  search: func(query: query) -> result<list<item>, string>
+  search: func(query: query) -> result<list<item>, string>;
 
-  count: func() -> u32
+  count: func() -> u32;
 
-  delete: func(id: string) -> result<_, string>
+  delete: func(id: string) -> result<_, string>;
 
-  delete-done-items: func() -> ()
+  delete-done-items: func() -> ();
 
-  delete-all: func() -> ()
+  delete-all: func() -> ();
 
-  get: func(id: string) -> result<item, string>
+  get: func(id: string) -> result<item, string>;
 
 }
 
 world component-name {
-  export api
+  export api;
 }

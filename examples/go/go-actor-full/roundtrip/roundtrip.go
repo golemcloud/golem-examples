@@ -16,42 +16,41 @@ type WasiHttpTransport struct {
 
 func (t WasiHttpTransport) RoundTrip(request *http.Request) (*http.Response, error) {
 
-	var headerKeyValues []go_wasi_http.WasiHttpTypesTuple2StringStringT
+	var headerKeyValues []go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesTuple2FieldKeyFieldValueT
 	for key, values := range request.Header {
 		for _, value := range values {
-			headerKeyValues = append(headerKeyValues, go_wasi_http.WasiHttpTypesTuple2StringStringT{
+			headerKeyValues = append(headerKeyValues, go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesTuple2FieldKeyFieldValueT{
 				F0: key,
-				F1: value,
+				F1: []byte(value),
 			})
 		}
 	}
-	headers := go_wasi_http.WasiHttpTypesNewFields(headerKeyValues)
-	defer go_wasi_http.WasiHttpTypesDropFields(headers)
+	headers := go_wasi_http.StaticFieldsFromList(headerKeyValues).Unwrap()
 
-	var method go_wasi_http.WasiHttpTypesMethod
+	var method go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethod
 	switch strings.ToUpper(request.Method) {
 	case "":
-		method = go_wasi_http.WasiHttpTypesMethodGet()
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodGet()
 	case "GET":
-		method = go_wasi_http.WasiHttpTypesMethodGet()
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodGet()
 	case "HEAD":
-		method = go_wasi_http.WasiHttpTypesMethodHead()
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodHead()
 	case "POST":
-		method = go_wasi_http.WasiHttpTypesMethodPost()
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodPost()
 	case "PUT":
-		method = go_wasi_http.WasiHttpTypesMethodPut()
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodPut()
 	case "DELETE":
-		method = go_wasi_http.WasiHttpTypesMethodDelete()
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodDelete()
 	case "CONNECT":
-		method = go_wasi_http.WasiHttpTypesMethodConnect()
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodConnect()
 	case "OPTIONS":
-		method = go_wasi_http.WasiHttpTypesMethodOptions()
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodOptions()
 	case "TRACE":
-		method = go_wasi_http.WasiHttpTypesMethodTrace()
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodTrace()
 	case "PATCH":
-		method = go_wasi_http.WasiHttpTypesMethodPatch()
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodPatch()
 	default:
-		method = go_wasi_http.WasiHttpTypesMethodOther(request.Method)
+		method = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesMethodOther(request.Method)
 	}
 
 	path := request.URL.Path
@@ -61,14 +60,14 @@ func (t WasiHttpTransport) RoundTrip(request *http.Request) (*http.Response, err
 		pathAndQuery += "?" + query
 	}
 
-	var scheme go_wasi_http.WasiHttpTypesScheme
+	var scheme go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesScheme
 	switch strings.ToLower(request.URL.Scheme) {
 	case "http":
-		scheme = go_wasi_http.WasiHttpTypesSchemeHttp()
+		scheme = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesSchemeHttp()
 	case "https":
-		scheme = go_wasi_http.WasiHttpTypesSchemeHttps()
+		scheme = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesSchemeHttps()
 	default:
-		scheme = go_wasi_http.WasiHttpTypesSchemeOther(request.URL.Scheme)
+		scheme = go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesSchemeOther(request.URL.Scheme)
 	}
 
 	userPassword := request.URL.User.String()
@@ -79,32 +78,37 @@ func (t WasiHttpTransport) RoundTrip(request *http.Request) (*http.Response, err
 		authority = userPassword + "@" + request.URL.Host
 	}
 
-	requestHandle := go_wasi_http.WasiHttpTypesNewOutgoingRequest(
-		method,
-		go_wasi_http.Some[string](pathAndQuery),
-		go_wasi_http.Some[go_wasi_http.WasiHttpTypesScheme](scheme),
-		go_wasi_http.Some[string](authority),
-		headers,
-	)
-	defer go_wasi_http.WasiHttpTypesDropOutgoingRequest(requestHandle)
+	requestHandle := go_wasi_http.NewOutgoingRequest(headers)
+
+	requestHandle.SetMethod(method)
+	requestHandle.SetPathWithQuery(go_wasi_http.Some(pathAndQuery))
+	requestHandle.SetScheme(go_wasi_http.Some(scheme))
+	requestHandle.SetAuthority(go_wasi_http.Some(authority))
 
 	if request.Body != nil {
 		reader := request.Body
 		defer reader.Close()
 
-		requestBodyResult := go_wasi_http.WasiHttpTypesOutgoingRequestWrite(requestHandle)
+		requestBodyResult := requestHandle.Body()
 		if requestBodyResult.IsErr() {
-			return nil, errors.New("Failed to start writing request body")
+			return nil, errors.New("Failed to get request body")
 		}
 		requestBody := requestBodyResult.Unwrap()
+
+		requestStreamResult := requestBody.Write()
+		if requestStreamResult.IsErr() {
+			return nil, errors.New("Failed to start writing request body")
+		}
+		requestStream := requestStreamResult.Unwrap()
 
 		buffer := make([]byte, 1024)
 		for {
 			n, err := reader.Read(buffer)
 
-			result := go_wasi_http.WasiIoStreamsWrite(requestBody, buffer[:n])
+			result := requestStream.Write(buffer[:n])
 			if result.IsErr() {
-				go_wasi_http.WasiIoStreamsDropOutputStream(requestBody)
+				requestStream.Drop()
+				requestBody.Drop()
 				return nil, errors.New("Failed to write request body chunk")
 			}
 
@@ -113,33 +117,36 @@ func (t WasiHttpTransport) RoundTrip(request *http.Request) (*http.Response, err
 			}
 		}
 
-		go_wasi_http.WasiHttpTypesFinishOutgoingStream(requestBody, go_wasi_http.None[uint32]())
-		go_wasi_http.WasiIoStreamsDropOutputStream(requestBody)
+		requestStream.Drop()
+		go_wasi_http.StaticOutgoingBodyFinish(requestBody, go_wasi_http.None[go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesTrailers]())
+		// requestBody.Drop() // TODO: this fails with "unknown handle index 0"
 	}
 
 	// TODO: timeouts
-	connectTimeoutMs := go_wasi_http.None[uint32]()
-	firstByteTimeoutMs := go_wasi_http.None[uint32]()
-	betweenBytesTimeoutMs := go_wasi_http.None[uint32]()
-	options := go_wasi_http.WasiHttpTypesRequestOptions{
-		ConnectTimeoutMs:      connectTimeoutMs,
-		FirstByteTimeoutMs:    firstByteTimeoutMs,
-		BetweenBytesTimeoutMs: betweenBytesTimeoutMs,
-	}
+	connectTimeoutMs := go_wasi_http.None[uint64]()
+	firstByteTimeoutMs := go_wasi_http.None[uint64]()
+	betweenBytesTimeoutMs := go_wasi_http.None[uint64]()
+	options := go_wasi_http.NewRequestOptions()
+	options.SetConnectTimeoutMs(connectTimeoutMs)
+	options.SetFirstByteTimeoutMs(firstByteTimeoutMs)
+	options.SetBetweenBytesTimeoutMs(betweenBytesTimeoutMs)
 
-	future := go_wasi_http.WasiHttpOutgoingHandlerHandle(requestHandle, go_wasi_http.Some(options))
-	defer go_wasi_http.WasiHttpTypesDropFutureIncomingResponse(future)
+	futureResult := go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_OutgoingHandlerHandle(requestHandle, go_wasi_http.Some(options))
+	if futureResult.IsErr() {
+		return nil, errors.New("Failed to send request")
+	}
+	future := futureResult.Unwrap()
 
 	incomingResponse, err := GetIncomingResponse(future)
 	if err != nil {
 		return nil, err
 	}
 
-	status := go_wasi_http.WasiHttpTypesIncomingResponseStatus(incomingResponse)
-	responseHeaders := go_wasi_http.WasiHttpTypesIncomingResponseHeaders(incomingResponse)
-	defer go_wasi_http.WasiHttpTypesDropFields(responseHeaders)
+	status := incomingResponse.Status()
+	responseHeaders := incomingResponse.Headers()
+	defer responseHeaders.Drop()
 
-	responseHeaderEntries := go_wasi_http.WasiHttpTypesFieldsEntries(responseHeaders)
+	responseHeaderEntries := responseHeaders.Entries()
 	header := http.Header{}
 
 	for _, tuple := range responseHeaderEntries {
@@ -166,14 +173,24 @@ func (t WasiHttpTransport) RoundTrip(request *http.Request) (*http.Response, err
 		contentLength = -1
 	}
 
-	responseBodyStreamResult := go_wasi_http.WasiHttpTypesIncomingResponseConsume(incomingResponse)
-	if responseBodyStreamResult.IsErr() {
+	responseBodyResult := incomingResponse.Consume()
+	if responseBodyResult.IsErr() {
 		return nil, errors.New("Failed to consume response body")
+	}
+	responseBody := responseBodyResult.Unwrap()
+
+	responseBodyStreamResult := responseBody.Stream()
+	if responseBodyStreamResult.IsErr() {
+		return nil, errors.New("Failed to get response body stream")
 	}
 	responseBodyStream := responseBodyStreamResult.Unwrap()
 
 	responseReader := WasiStreamReader{
-		Handle: responseBodyStream,
+		Stream:           responseBodyStream,
+		Body:             responseBody,
+		OutgoingRequest:  requestHandle,
+		IncomingResponse: incomingResponse,
+		Future:           future,
 	}
 
 	response := http.Response{
@@ -188,49 +205,53 @@ func (t WasiHttpTransport) RoundTrip(request *http.Request) (*http.Response, err
 	return &response, nil
 }
 
-func GetIncomingResponse(future uint32) (uint32, error) {
-	result := go_wasi_http.WasiHttpTypesFutureIncomingResponseGet(future)
+func GetIncomingResponse(future go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_OutgoingHandlerFutureIncomingResponse) (go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesIncomingResponse, error) {
+	result := future.Get()
 	if result.IsSome() {
 		result2 := result.Unwrap()
 		if result2.IsErr() {
 			return 0, errors.New("Failed to send request")
 		}
-		return result2.Unwrap(), nil
+		result3 := result2.Unwrap()
+		if result3.IsErr() {
+			return 0, errors.New("Failed to send request")
+		}
+		return result3.Unwrap(), nil
 	} else {
-		pollable := go_wasi_http.WasiHttpTypesListenToFutureIncomingResponse(future)
-		var pollables []uint32
-		pollables = append(pollables, pollable)
-		go_wasi_http.WasiPollPollPollOneoff(pollables)
-		go_wasi_http.WasiPollPollDropPollable(pollable)
+		pollable := future.Subscribe()
+		pollable.Block()
 		return GetIncomingResponse(future)
 	}
 }
 
 type WasiStreamReader struct {
-	Handle uint32
+	Stream           go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesInputStream
+	Body             go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesIncomingBody
+	OutgoingRequest  go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesOutgoingRequest
+	IncomingResponse go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesIncomingResponse
+	Future           go_wasi_http.WasiHttp0_2_0_rc_2023_11_10_TypesFutureIncomingResponse
 }
 
 func (reader WasiStreamReader) Read(p []byte) (int, error) {
 	c := cap(p)
-	result := go_wasi_http.WasiIoStreamsRead(reader.Handle, uint64(c))
-	if result.IsErr() {
+	result := reader.Stream.BlockingRead(uint64(c))
+	isEof := result.IsErr() && result.UnwrapErr() == go_wasi_http.WasiIo0_2_0_rc_2023_11_10_StreamsStreamErrorClosed()
+	if isEof {
+		return 0, io.EOF
+	} else if result.IsErr() {
 		return 0, errors.New("Failed to read response stream")
-	}
-
-	tuple := result.Unwrap()
-	var err error
-	if tuple.F1 == go_wasi_http.WasiIoStreamsStreamStatusEnded() {
-		err = io.EOF
 	} else {
-		err = nil
+		chunk := result.Unwrap()
+		copy(p, chunk)
+		return len(chunk), nil
 	}
-
-	chunk := tuple.F0
-	copy(p, chunk)
-	return len(chunk), err
 }
 
 func (reader WasiStreamReader) Close() error {
-	go_wasi_http.WasiIoStreamsDropInputStream(reader.Handle)
+	reader.Stream.Drop()
+	reader.Body.Drop()
+	reader.IncomingResponse.Drop()
+	reader.Future.Drop()
+	reader.OutgoingRequest.Drop()
 	return nil
 }
