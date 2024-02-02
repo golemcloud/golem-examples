@@ -110,7 +110,7 @@ impl GuestLanguage {
             GuestLanguage::C => GuestLanguageTier::Tier2,
             GuestLanguage::Zig => GuestLanguageTier::Tier3,
             GuestLanguage::JavaScript => GuestLanguageTier::Tier2,
-            GuestLanguage::CSharp => GuestLanguageTier::Tier4,
+            GuestLanguage::CSharp => GuestLanguageTier::Tier3,
             GuestLanguage::Swift => GuestLanguageTier::Tier3,
             GuestLanguage::Grain => GuestLanguageTier::Tier3,
             GuestLanguage::Python => GuestLanguageTier::Tier2,
