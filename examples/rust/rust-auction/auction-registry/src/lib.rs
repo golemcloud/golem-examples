@@ -2,7 +2,7 @@ mod auction;
 mod auction_registry_logic;
 mod model;
 
-cargo_component_bindings::generate!();
+mod bindings;
 
 use bindings::*;
 use exports::pack::name::api::{
