@@ -12,9 +12,9 @@ lto = true
 opt-level = 's'
 
 [dependencies]
-wit-bindgen = { version = "0.16.0", default-features = false, features = ["realloc"] }
+wit-bindgen = { version = "0.17.0", default-features = false, features = ["realloc"] }
 
 [package.metadata.component.target]
 path = "wit"
 
-[package.metadata.component.dependencies]
+[package.metadata.component.target.dependencies]
