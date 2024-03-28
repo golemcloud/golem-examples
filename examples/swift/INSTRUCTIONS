@@ -3,4 +3,4 @@ See the documentation about installing tooling: https://golem.cloud/learn/swift
 Compile the Swift code with SwiftWasm:
   /Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin/swiftc -target wasm32-unknown-wasi main.swift -o component_name.module.wasm -sdk /Library/Developer/Toolchains/swift-wasm-5.7.3-RELEASE.xctoolchain/usr/share/wasi-sysroot/
 Convert the result into a Component:
-  wasm-tools component new component_name.module.wasm -o component_name.wasm --adapt adapters/tier3/wasi_snapshot_preview1.wasm
+  wasm-tools component new component_name.module.wasm -o component_name.wasm --adapt adapters/tier2/wasi_snapshot_preview1.wasm
