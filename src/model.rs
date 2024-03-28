@@ -105,16 +105,16 @@ impl GuestLanguage {
 
     pub fn tier(&self) -> GuestLanguageTier {
         match self {
-            GuestLanguage::Rust => GuestLanguageTier::Tier2,
-            GuestLanguage::Go => GuestLanguageTier::Tier2,
-            GuestLanguage::C => GuestLanguageTier::Tier2,
-            GuestLanguage::Zig => GuestLanguageTier::Tier3,
-            GuestLanguage::JavaScript => GuestLanguageTier::Tier2,
+            GuestLanguage::Rust => GuestLanguageTier::Tier1,
+            GuestLanguage::Go => GuestLanguageTier::Tier1,
+            GuestLanguage::C => GuestLanguageTier::Tier1,
+            GuestLanguage::Zig => GuestLanguageTier::Tier2,
+            GuestLanguage::JavaScript => GuestLanguageTier::Tier1,
             GuestLanguage::CSharp => GuestLanguageTier::Tier3,
-            GuestLanguage::Swift => GuestLanguageTier::Tier3,
-            GuestLanguage::Grain => GuestLanguageTier::Tier3,
-            GuestLanguage::Python => GuestLanguageTier::Tier2,
-            GuestLanguage::Scala2 => GuestLanguageTier::Tier2,
+            GuestLanguage::Swift => GuestLanguageTier::Tier2,
+            GuestLanguage::Grain => GuestLanguageTier::Tier2,
+            GuestLanguage::Python => GuestLanguageTier::Tier1,
+            GuestLanguage::Scala2 => GuestLanguageTier::Tier1,
         }
     }
 
@@ -159,7 +159,6 @@ pub enum GuestLanguageTier {
     Tier1,
     Tier2,
     Tier3,
-    Tier4,
 }
 
 impl GuestLanguageTier {
@@ -168,7 +167,6 @@ impl GuestLanguageTier {
             "tier1" | "1" => Some(GuestLanguageTier::Tier1),
             "tier2" | "2" => Some(GuestLanguageTier::Tier2),
             "tier3" | "3" => Some(GuestLanguageTier::Tier3),
-            "tier4" | "4" => Some(GuestLanguageTier::Tier4),
             _ => None,
         }
     }
@@ -178,7 +176,6 @@ impl GuestLanguageTier {
             GuestLanguageTier::Tier1 => 1,
             GuestLanguageTier::Tier2 => 2,
             GuestLanguageTier::Tier3 => 3,
-            GuestLanguageTier::Tier4 => 4,
         }
     }
 
@@ -187,7 +184,6 @@ impl GuestLanguageTier {
             GuestLanguageTier::Tier1 => "tier1",
             GuestLanguageTier::Tier2 => "tier2",
             GuestLanguageTier::Tier3 => "tier3",
-            GuestLanguageTier::Tier4 => "tier4",
         }
     }
 }
