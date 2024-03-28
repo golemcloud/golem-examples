@@ -5,4 +5,4 @@ Generate bindings from WIT:
 Compile the C code with WASI SDK:
   ~/wasi-sdk-20.0/bin/clang --sysroot ~/wasi-sdk-20.0/share/wasi-sysroot main.c component_name.c component_name_component_type.o -o component_name.module.wasm
 Convert the result into a Component:
-  wasm-tools component new component_name.module.wasm -o component_name.wasm --adapt adapters/tier2/wasi_snapshot_preview1.wasm
+  wasm-tools component new component_name.module.wasm -o component_name.wasm --adapt adapters/tier1/wasi_snapshot_preview1.wasm
