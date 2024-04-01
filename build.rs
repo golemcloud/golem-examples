@@ -5,12 +5,22 @@ use std::path::PathBuf;
 
 fn main() {
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-    let golem_wit_root = find_package_root("golem-wit");
+    let golem_wit_root = PathBuf::from(find_package_root("golem-wit"));
 
-    println!("Output dir: {out_dir:?}");
-    println!("Golem WIT root: {golem_wit_root:?}");
+    println!("cargo:warning=Output dir: {out_dir:?}");
+    println!("cargo:warning=Golem WIT root: {golem_wit_root:?}");
 
-    copy_dir(golem_wit_root, out_dir.join("golem-wit")).unwrap();
+    let target = out_dir.join("golem-wit");
+    if target.exists() {
+        if dir_diff::is_different(&golem_wit_root, &target).unwrap_or(true) {
+            std::fs::remove_dir_all(&target).unwrap();
+            copy_dir(golem_wit_root, target).unwrap();
+        } else {
+            println!("cargo:warning=Golem WIT is up to date in {target:?}");
+        }
+    } else {
+        copy_dir(golem_wit_root, target).unwrap();
+    }
 }
 
 fn find_package_root(name: &str) -> String {

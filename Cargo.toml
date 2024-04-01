@@ -23,6 +23,7 @@ clap = { version = "4.4.17", features = ["derive"], optional = true }
 [build-dependencies]
 cargo_metadata = "0.18.1"
 copy_dir = "0.1.3"
+dir-diff = "0.3.3"
 
 [features]
 build-binary = ["clap"]
