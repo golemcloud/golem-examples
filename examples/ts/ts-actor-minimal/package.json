@@ -1,0 +1,11 @@
+{
+    "type": "module",
+    "devDependencies": {
+        "@bytecodealliance/componentize-js": "0.7.0",
+        "@bytecodealliance/jco": "1.0.0",
+        "typescript": "^5.4.3"
+    },
+    "scripts": {
+        "build": "tsc && node componentize.js"
+    }
+}
