@@ -1,6 +1,4 @@
-See the documentation about installing tooling: https://golem.cloud/learn/javascript
-
-Compile the JavaScript project with npm:
+Compile the TypeScript project with npm:
   npm install
   npm run build
 
