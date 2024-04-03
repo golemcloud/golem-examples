@@ -2,3 +2,4 @@ templates/**/*.wasm
 /target
 .idea
 .DS_Store
+node_modules

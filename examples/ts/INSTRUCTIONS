@@ -1,0 +1,5 @@
+Compile the TypeScript project with npm:
+  npm install
+  npm run build
+
+The `out/component_name.wasm` file is ready to be uploaded to Golem Cloud!
