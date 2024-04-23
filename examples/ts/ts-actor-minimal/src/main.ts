@@ -1,12 +1,13 @@
-var state: number = 0;
+import { PackNameApi } from './interfaces/pack-name-api.js';
 
-export const api = {
-    "add": function (value: number) {
+let state = BigInt(0);
+
+export const api: typeof PackNameApi = {
+    add(value: bigint) {
         console.log(`Adding ${value} to the counter`);
         state += value;
     },
-    "get": function(): number {
-        console.log(`Returning the current counter value: ${state}`);
+    get() {
         return state;
     }
 }

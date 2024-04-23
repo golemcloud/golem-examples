@@ -1,5 +1,14 @@
 Compile the TypeScript project with npm:
-  npm install
-  npm run build
-
+```bash
+npm install
+npm run build
+```
 The `out/component_name.wasm` file is ready to be uploaded to Golem Cloud!
+
+To do stub generation run the following command:
+```bash
+npm run stub
+```
+
+This will generate the typescript declaration files in `src/interfaces`
+
