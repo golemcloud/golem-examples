@@ -9,7 +9,7 @@ description = "Golem example templates"
 
 [dependencies]
 derive_more = "0.99.17"
-golem-wit = { version = "0.2.3" }
+golem-wit = { version = "0.2.8" }
 include_dir = { version = "0.7.3" }
 Inflector = { version = "0.11.4" }
 once_cell = { version = "1.19.0" }
