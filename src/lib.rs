@@ -61,7 +61,7 @@ impl Examples for GolemExamples {
             &example.example_path,
             &parameters
                 .target_path
-                .join(parameters.template_name.as_string()),
+                .join(parameters.component_name.as_string()),
             &parameters,
             &example.exclude,
             true,
@@ -72,7 +72,7 @@ impl Examples for GolemExamples {
                 adapter_path,
                 &parameters
                     .target_path
-                    .join(parameters.template_name.as_string())
+                    .join(parameters.component_name.as_string())
                     .join("adapters")
                     .join(example.language.tier().name())
                     .join(adapter_path.file_name().unwrap().to_str().unwrap()),
@@ -84,7 +84,7 @@ impl Examples for GolemExamples {
                 wit_dep,
                 &parameters
                     .target_path
-                    .join(parameters.template_name.as_string())
+                    .join(parameters.component_name.as_string())
                     .join("wit")
                     .join("deps")
                     .join(wit_dep.file_name().unwrap().to_str().unwrap()),
@@ -186,9 +186,9 @@ fn copy_all(catalog: &Dir<'_>, source_path: &Path, target_path: &Path) -> io::Re
 
 fn transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> String {
     str.as_ref()
-        .replace("component-name", &parameters.template_name.to_kebab_case())
-        .replace("ComponentName", &parameters.template_name.to_pascal_case())
-        .replace("component_name", &parameters.template_name.to_snake_case())
+        .replace("component-name", &parameters.component_name.to_kebab_case())
+        .replace("ComponentName", &parameters.component_name.to_pascal_case())
+        .replace("component_name", &parameters.component_name.to_snake_case())
         .replace(
             "pack::name",
             &parameters.package_name.to_string_with_double_colon(),

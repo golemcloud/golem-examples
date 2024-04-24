@@ -12,10 +12,10 @@ pub fn create(auction: Auction) {
 
 fn create_worker(auction_id: AuctionId) {
     let client = Client::new();
-    let template_id = env::var("AUCTION_TEMPLATE_ID").unwrap();
+    let component = env::var("AUCTION_COMPONENT_ID").unwrap();
     let url = format!(
         "https://release.api.golem.cloud/v1/templates/{}/workers",
-        template_id
+        component
     );
     let body = CreateWorkerBody::new(format!("auction-{}", auction_id.auction_id));
     let token = env::var("GOLEM_TOKEN_SECRET").unwrap();
@@ -30,11 +30,11 @@ fn create_worker(auction_id: AuctionId) {
 
 fn get_invocation_key(auction_id: AuctionId) -> InvocationKey {
     let client = Client::new();
-    let template_id = env::var("AUCTION_TEMPLATE_ID").unwrap();
+    let component = env::var("AUCTION_COMPONENT_ID").unwrap();
     let worker_id = format!("auction-{}", auction_id.auction_id);
     let url = format!(
         "https://release.api.golem.cloud/v1/templates/{}/workers/{}/key",
-        template_id, worker_id
+        component, worker_id
     );
     let token = env::var("GOLEM_TOKEN_SECRET").unwrap();
     let response = client
@@ -48,9 +48,9 @@ fn get_invocation_key(auction_id: AuctionId) -> InvocationKey {
 
 fn initialize_worker(auction: Auction, invocation_key: InvocationKey) {
     let client = Client::new();
-    let template_id = env::var("AUCTION_TEMPLATE_ID").unwrap();
+    let component = env::var("AUCTION_COMPONENT_ID").unwrap();
     let worker_id = format!("auction-{}", auction.auction_id.auction_id);
-    let url = format!("https://release.api.golem.cloud/v1/templates/{}/workers/{}/invoke-and-await", template_id, worker_id);
+    let url = format!("https://release.api.golem.cloud/v1/templates/{}/workers/{}/invoke-and-await", component, worker_id);
     let body = InitializeWorkerBody::new(auction);
     let token = env::var("GOLEM_TOKEN_SECRET").unwrap();
     let function = "golem:template/api/initialize";
