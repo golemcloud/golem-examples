@@ -1,6 +1,6 @@
 use clap::*;
 use golem_examples::model::{
-    ExampleName, ExampleParameters, GuestLanguage, GuestLanguageTier, PackageName, TemplateName,
+    ComponentName, ExampleName, ExampleParameters, GuestLanguage, GuestLanguageTier, PackageName,
 };
 use golem_examples::*;
 use std::env;
@@ -14,13 +14,13 @@ enum Command {
         example: ExampleName,
 
         #[arg(short, long)]
-        template_name: TemplateName,
+        component_name: ComponentName,
 
         #[arg(short, long)]
         package_name: Option<PackageName>,
     },
     #[command()]
-    ListTemplates {
+    ListExamples {
         #[arg(short, long)]
         min_tier: Option<GuestLanguageTier>,
 
@@ -41,7 +41,7 @@ pub fn main() {
     match &command.command {
         Command::New {
             example: example_name,
-            template_name,
+            component_name,
             package_name,
         } => {
             let examples = GolemExamples::list_all_examples();
@@ -54,23 +54,23 @@ pub fn main() {
                     match GolemExamples::instantiate(
                         example,
                         ExampleParameters {
-                            template_name: template_name.clone(),
+                            component_name: component_name.clone(),
                             package_name: package_name
                                 .clone()
-                                .unwrap_or(PackageName::from_string("golem:template").unwrap()),
+                                .unwrap_or(PackageName::from_string("golem:component").unwrap()),
                             target_path: cwd,
                         },
                     ) {
                         Ok(instructions) => println!("{instructions}"),
-                        Err(err) => eprintln!("Failed to instantiate template: {err}"),
+                        Err(err) => eprintln!("Failed to instantiate example: {err}"),
                     }
                 }
                 None => {
-                    eprintln!("Unknown template {example_name}. Use the list-templates command to see the available commands.");
+                    eprintln!("Unknown example {example_name}. Use the list-examples command to see the available commands.");
                 }
             }
         }
-        Command::ListTemplates { min_tier, language } => {
+        Command::ListExamples { min_tier, language } => {
             GolemExamples::list_all_examples()
                 .iter()
                 .filter(|example| match language {

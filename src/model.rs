@@ -12,13 +12,13 @@ use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, FromStr, Serialize, Deserialize)]
-pub struct TemplateName(String);
+pub struct ComponentName(String);
 
-static TEMPLATE_NAME_SPLIT_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new("(?=[A-Z\\-_])").unwrap());
+static COMPONENT_NAME_SPLIT_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new("(?=[A-Z\\-_])").unwrap());
 
-impl TemplateName {
-    pub fn new(name: impl AsRef<str>) -> TemplateName {
-        TemplateName(name.as_ref().to_string())
+impl ComponentName {
+    pub fn new(name: impl AsRef<str>) -> ComponentName {
+        ComponentName(name.as_ref().to_string())
     }
 
     pub fn as_string(&self) -> &str {
@@ -27,7 +27,7 @@ impl TemplateName {
 
     pub fn parts(&self) -> Vec<String> {
         let matches: Vec<Result<Match, fancy_regex::Error>> =
-            TEMPLATE_NAME_SPLIT_REGEX.find_iter(&self.0).collect();
+            COMPONENT_NAME_SPLIT_REGEX.find_iter(&self.0).collect();
         let mut parts: Vec<&str> = vec![];
         let mut last = 0;
         for m in matches.into_iter().flatten() {
@@ -66,7 +66,7 @@ impl TemplateName {
     }
 }
 
-impl fmt::Display for TemplateName {
+impl fmt::Display for ComponentName {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
@@ -288,7 +288,7 @@ pub struct Example {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExampleParameters {
-    pub template_name: TemplateName,
+    pub component_name: ComponentName,
     pub package_name: PackageName,
     pub target_path: PathBuf,
 }
@@ -307,44 +307,44 @@ pub(crate) struct ExampleMetadata {
 
 #[cfg(test)]
 mod tests {
-    use crate::model::{PackageName, TemplateName};
+    use crate::model::{ComponentName, PackageName};
     use once_cell::sync::Lazy;
 
-    static N1: Lazy<TemplateName> = Lazy::new(|| TemplateName::new("my-test-template"));
-    static N2: Lazy<TemplateName> = Lazy::new(|| TemplateName::new("MyTestTemplate"));
-    static N3: Lazy<TemplateName> = Lazy::new(|| TemplateName::new("myTestTemplate"));
-    static N4: Lazy<TemplateName> = Lazy::new(|| TemplateName::new("my_test_template"));
+    static N1: Lazy<ComponentName> = Lazy::new(|| ComponentName::new("my-test-component"));
+    static N2: Lazy<ComponentName> = Lazy::new(|| ComponentName::new("MyTestComponent"));
+    static N3: Lazy<ComponentName> = Lazy::new(|| ComponentName::new("myTestComponent"));
+    static N4: Lazy<ComponentName> = Lazy::new(|| ComponentName::new("my_test_component"));
 
     #[test]
-    pub fn template_name_to_pascal_case() {
-        assert_eq!(N1.to_pascal_case(), "MyTestTemplate");
-        assert_eq!(N2.to_pascal_case(), "MyTestTemplate");
-        assert_eq!(N3.to_pascal_case(), "MyTestTemplate");
-        assert_eq!(N4.to_pascal_case(), "MyTestTemplate");
+    pub fn component_name_to_pascal_case() {
+        assert_eq!(N1.to_pascal_case(), "MyTestComponent");
+        assert_eq!(N2.to_pascal_case(), "MyTestComponent");
+        assert_eq!(N3.to_pascal_case(), "MyTestComponent");
+        assert_eq!(N4.to_pascal_case(), "MyTestComponent");
     }
 
     #[test]
-    pub fn template_name_to_camel_case() {
-        assert_eq!(N1.to_camel_case(), "myTestTemplate");
-        assert_eq!(N2.to_camel_case(), "myTestTemplate");
-        assert_eq!(N3.to_camel_case(), "myTestTemplate");
-        assert_eq!(N4.to_camel_case(), "myTestTemplate");
+    pub fn component_name_to_camel_case() {
+        assert_eq!(N1.to_camel_case(), "myTestComponent");
+        assert_eq!(N2.to_camel_case(), "myTestComponent");
+        assert_eq!(N3.to_camel_case(), "myTestComponent");
+        assert_eq!(N4.to_camel_case(), "myTestComponent");
     }
 
     #[test]
-    pub fn template_name_to_snake_case() {
-        assert_eq!(N1.to_snake_case(), "my_test_template");
-        assert_eq!(N2.to_snake_case(), "my_test_template");
-        assert_eq!(N3.to_snake_case(), "my_test_template");
-        assert_eq!(N4.to_snake_case(), "my_test_template");
+    pub fn component_name_to_snake_case() {
+        assert_eq!(N1.to_snake_case(), "my_test_component");
+        assert_eq!(N2.to_snake_case(), "my_test_component");
+        assert_eq!(N3.to_snake_case(), "my_test_component");
+        assert_eq!(N4.to_snake_case(), "my_test_component");
     }
 
     #[test]
-    pub fn template_name_to_kebab_case() {
-        assert_eq!(N1.to_kebab_case(), "my-test-template");
-        assert_eq!(N2.to_kebab_case(), "my-test-template");
-        assert_eq!(N3.to_kebab_case(), "my-test-template");
-        assert_eq!(N4.to_kebab_case(), "my-test-template");
+    pub fn component_name_to_kebab_case() {
+        assert_eq!(N1.to_kebab_case(), "my-test-component");
+        assert_eq!(N2.to_kebab_case(), "my-test-component");
+        assert_eq!(N3.to_kebab_case(), "my-test-component");
+        assert_eq!(N4.to_kebab_case(), "my-test-component");
     }
 
     static P1: Lazy<PackageName> = Lazy::new(|| PackageName::from_string("foo:bar").unwrap());

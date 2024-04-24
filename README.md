@@ -34,12 +34,12 @@ Golem examples are currently simple and not using any known template language, i
 
 When calling `golem-new` the user specifies a **template name**. The provided component name must use either `PascalCase`, `snake_case` or `kebab-case`.
 
-There is an optional parameter for defining a **package name**, which defaults to `golem:template`. It has to be in the `pack:name` format.
+There is an optional parameter for defining a **package name**, which defaults to `golem:component`. It has to be in the `pack:name` format.
 
 The following occurrences get replaced to the provided component name, applying the casing used in the template:
-- `template-name`
-- `TemplateName`
-- `template_name`
+- `component-name`
+- `ComponentName`
+- `component_name`
 - `pack::name`
 - `pack:name`
 - `pack_name`
