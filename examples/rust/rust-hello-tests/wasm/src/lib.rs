@@ -2,20 +2,19 @@ mod bindings;
 
 use crate::bindings::exports::pack::name::api::*;
 use lib::core;
+use std::cell::RefCell;
 
 struct AppState(usize);
 
-static mut APP_STATE: AppState = AppState(0);
-
-fn with_app_state<T>(f: impl FnOnce(&mut AppState) -> T) -> T {
-    unsafe { f(&mut APP_STATE) }
+thread_local! {
+    static APP_STATE: RefCell<AppState> = RefCell::new(AppState(0));
 }
 
 struct Component;
 
 impl Guest for Component {
     fn hello() -> String {
-        with_app_state(|state| {
+        APP_STATE.with_borrow_mut(|state| {
             let (n, message) = core::hello(state.0);
 
             state.0 = n;

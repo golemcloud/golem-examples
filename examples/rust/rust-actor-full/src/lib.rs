@@ -1,5 +1,6 @@
 mod bindings;
 
+use std::cell::RefCell;
 use crate::bindings::exports::pack::name::api::*;
 use crate::bindings::golem::api::host::*;
 
@@ -15,15 +16,10 @@ struct State {
 }
 
 /// This holds the state of our application.
-/// It is a global variable, which Rust doesn't like, so
-/// we use `with_state` to access or update the global variable, so we
-/// can avoid `unsafe` noise.
-static mut STATE: State = State {
-    total: 0
-};
-
-fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
-    unsafe { f(&mut STATE) }
+thread_local! {
+    static STATE: RefCell<State> = RefCell::new(State {
+        total: 0,
+    });
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -41,17 +37,17 @@ struct Component;
 impl Guest for Component {
     /// Updates the component's state by adding the given value to the total.
     fn add(value: u64) {
-        with_state(|state| state.total += value);
+        STATE.with_borrow_mut(|state| state.total += value);
     }
 
     /// Returns the current total.
     fn get() -> u64 {
-        with_state(|state| state.total)
+        STATE.with_borrow_mut(|state| state.total)
     }
 
     /// Sends the current total to a remote server's REST API
     fn publish() -> Result<(), String> {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             println!("Publishing the total count {} via HTTP", state.total);
             let client = Client::builder().build()?;
 

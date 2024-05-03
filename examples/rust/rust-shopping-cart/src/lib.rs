@@ -1,5 +1,6 @@
 mod bindings;
 
+use std::cell::RefCell;
 use crate::bindings::exports::pack::name::api::*;
 
 use rand::prelude::*;
@@ -62,25 +63,19 @@ fn dispatch_order() -> Result<(), &'static str> {
 
 /**
  * This holds the state of our application, which is always bound to 
- * a given user. It is a global variable, which Rust doesn't like, so 
- * we use `with_state` to access or update the global variable, so we 
- * can avoid `unsafe` noise.
+ * a given user.
  */
-static mut STATE: State = State {
+thread_local! {
+    static STATE: RefCell<State> = RefCell::new(State {
     user_id: String::new(),
     items: vec![],
-};
-
-fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
-    let result = unsafe { f(&mut STATE) };
-
-    return result;
+    });
 }
 
 // Here, we declare a Rust implementation of the `ShoppingCart` trait.
 impl Guest for Component {
     fn initialize_cart(user_id: String) -> () {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             println!("Initializing cart for user {}", user_id);
 
             state.user_id = user_id;
@@ -88,7 +83,7 @@ impl Guest for Component {
     }
 
     fn add_item(item: ProductItem) -> () {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             println!(
                 "Adding item {:?} to the cart of user {}",
                 item, state.user_id
@@ -99,7 +94,7 @@ impl Guest for Component {
     }
 
     fn remove_item(product_id: String) -> () {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             println!(
                 "Removing item with product ID {} from the cart of user {}",
                 product_id, state.user_id
@@ -110,7 +105,7 @@ impl Guest for Component {
     }
 
     fn update_item_quantity(product_id: String, quantity: u32) -> () {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             println!(
                 "Updating quantity of item with product ID {} to {} in the cart of user {}",
                 product_id, quantity, state.user_id
@@ -125,7 +120,7 @@ impl Guest for Component {
     }
 
     fn checkout() -> CheckoutResult {
-        let result: Result<OrderConfirmation, &'static str> = with_state(|state| {
+        let result: Result<OrderConfirmation, &'static str> = STATE.with_borrow_mut(|state| {
             reserve_inventory()?;
 
             charge_credit_card()?;
@@ -151,7 +146,7 @@ impl Guest for Component {
     }
 
     fn get_cart_contents() -> Vec<ProductItem> {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             println!("Getting cart contents for user {}", state.user_id);
 
             state.items.clone()

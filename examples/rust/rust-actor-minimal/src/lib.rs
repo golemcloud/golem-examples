@@ -1,5 +1,6 @@
 mod bindings;
 
+use std::cell::RefCell;
 use crate::bindings::exports::pack::name::api::*;
 
 /// This is one of any number of data types that our application
@@ -11,25 +12,20 @@ struct State {
 }
 
 /// This holds the state of our application.
-/// It is a global variable, which Rust doesn't like, so
-/// we use `with_state` to access or update the global variable, so we
-/// can avoid `unsafe` noise.
-static mut STATE: State = State {
-    total: 0
-};
-
-fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
-    unsafe { f(&mut STATE) }
+thread_local! {
+    static STATE: RefCell<State> = RefCell::new(State {
+        total: 0,
+    });
 }
 
 struct Component;
 
 impl Guest for Component {
     fn add(value: u64) {
-        with_state(|state| state.total += value);
+        STATE.with_borrow_mut(|state| state.total += value);
     }
 
     fn get() -> u64 {
-        with_state(|state| state.total)
+        STATE.with_borrow_mut(|state| state.total)
     }
 }
