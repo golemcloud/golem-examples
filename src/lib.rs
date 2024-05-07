@@ -226,6 +226,7 @@ fn parse_example(
     let mut wit_deps: Vec<PathBuf> = vec![];
     if metadata.requires_golem_host_wit.unwrap_or(false) {
         wit_deps.push(Path::new("golem").to_path_buf());
+        wit_deps.push(Path::new("wasm-rpc").to_path_buf());
     }
     if metadata.requires_wasi.unwrap_or(false) {
         wit_deps.push(Path::new("blobstore").to_path_buf());

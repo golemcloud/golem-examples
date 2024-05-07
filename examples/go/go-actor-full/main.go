@@ -73,8 +73,8 @@ func (e ComponentNameImpl) Publish() component_name.Result[struct{}, string] {
 }
 
 func (e ComponentNameImpl) Pause() {
-	promise := component_name.GolemApiHostGolemCreatePromise()
-	component_name.GolemApiHostGolemAwaitPromise(promise)
+	promise := component_name.GolemApi0_2_0_HostGolemCreatePromise()
+	component_name.GolemApi0_2_0_HostGolemAwaitPromise(promise)
 }
 
 func main() {

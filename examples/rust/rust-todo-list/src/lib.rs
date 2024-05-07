@@ -4,6 +4,7 @@ use crate::bindings::exports::pack::name::api::*;
 
 use chrono::{DateTime, NaiveDateTime, Utc};
 use once_cell::sync::Lazy;
+use std::cell::RefCell;
 use std::{cmp, collections::HashMap, num::TryFromIntError};
 use uuid::Uuid;
 
@@ -24,13 +25,12 @@ const DATE_TIME_FORMAT: &str = "%Y-%m-%d %H:%M:%S %z";
 const QUERY_MAX_LIMIT: u32 = 100;
 const QUERY_DEFAULT_LIMIT: u32 = 10;
 
-static mut STATE: Lazy<State> = Lazy::new(|| State {
-    items: HashMap::new(),
-});
-
-fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
-    unsafe { f(&mut STATE) }
-}
+thread_local! {
+    static STATE: RefCell<Lazy<State>> = RefCell::new(
+        Lazy::new(|| State {
+            items: HashMap::new(),
+    })
+)}
 
 fn unix_time_from_option_string(s: Option<String>) -> Result<Option<i64>, String> {
     s.map(|s| {
@@ -112,7 +112,7 @@ impl Guest for Component {
 
         let result = item.clone();
 
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             state.items.insert(item.id.clone(), item);
         });
 
@@ -123,7 +123,7 @@ impl Guest for Component {
         if change.change_is_present() {
             let deadline_update = unix_time_from_option_string(change.deadline)?;
 
-            with_state(|state| {
+            STATE.with_borrow_mut(|state| {
                 if let Some(item) = state.items.get_mut(&id) {
                     let mut modified = false;
 
@@ -188,7 +188,7 @@ impl Guest for Component {
             .try_into()
             .map_err(|e: TryFromIntError| e.to_string())?;
 
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             let mut result: Vec<_> = state
                 .items
                 .values()
@@ -257,7 +257,7 @@ impl Guest for Component {
     }
 
     fn count() -> u32 {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             let count = state.items.len() as u32;
 
             println!("You have {} items in your todo list.", count);
@@ -267,7 +267,7 @@ impl Guest for Component {
     }
 
     fn delete(id: String) -> Result<(), String> {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             if state.items.contains_key(&id) {
                 state.items.remove(&id);
 
@@ -285,7 +285,7 @@ impl Guest for Component {
     }
 
     fn delete_done_items() {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             let mut count = 0_u32;
 
             state.items.retain(|_, item| {
@@ -303,7 +303,7 @@ impl Guest for Component {
     }
 
     fn delete_all() {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             state.items.clear();
 
             println!("Deleted all items.");
@@ -311,7 +311,7 @@ impl Guest for Component {
     }
 
     fn get(id: String) -> Result<Item, String> {
-        with_state(|state| {
+        STATE.with_borrow_mut(|state| {
             if let Some(item) = state.items.get(&id) {
                 println!("Found item with ID '{}'.", id);
 
