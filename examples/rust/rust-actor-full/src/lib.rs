@@ -1,8 +1,8 @@
 mod bindings;
 
-use std::cell::RefCell;
 use crate::bindings::exports::pack::name::api::*;
 use crate::bindings::golem::api::host::*;
+use std::cell::RefCell;
 
 use reqwest::{Client, Response};
 use serde::{Deserialize, Serialize};
@@ -15,8 +15,8 @@ struct State {
     total: u64,
 }
 
-/// This holds the state of our application.
 thread_local! {
+    /// This holds the state of our application.
     static STATE: RefCell<State> = RefCell::new(State {
         total: 0,
     });
@@ -42,25 +42,30 @@ impl Guest for Component {
 
     /// Returns the current total.
     fn get() -> u64 {
-        STATE.with_borrow_mut(|state| state.total)
+        STATE.with_borrow(|state| state.total)
     }
 
     /// Sends the current total to a remote server's REST API
     fn publish() -> Result<(), String> {
-        STATE.with_borrow_mut(|state| {
-            println!("Publishing the total count {} via HTTP", state.total);
-            let client = Client::builder().build()?;
+        STATE
+            .with_borrow(|state| {
+                println!("Publishing the total count {} via HTTP", state.total);
+                let client = Client::builder().build()?;
 
-            let request_body = RequestBody { current_total: state.total };
-            let response: Response = client.post("http://localhost:9999/current-total")
-                .json(&request_body)
-                .send()?;
+                let request_body = RequestBody {
+                    current_total: state.total,
+                };
+                let response: Response = client
+                    .post("http://localhost:9999/current-total")
+                    .json(&request_body)
+                    .send()?;
 
-            let response_body = response.json::<ResponseBody>()?;
-            println!("Result: {:?}", response_body);
+                let response_body = response.json::<ResponseBody>()?;
+                println!("Result: {:?}", response_body);
 
-            Ok(())
-        }).map_err(|e: reqwest::Error| format!("Failed to publish: {}", e))
+                Ok(())
+            })
+            .map_err(|e: reqwest::Error| format!("Failed to publish: {}", e))
     }
 
     /// Pauses the component until a Promise is fulfilled externally

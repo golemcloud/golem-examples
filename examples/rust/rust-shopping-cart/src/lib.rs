@@ -1,7 +1,7 @@
 mod bindings;
 
-use std::cell::RefCell;
 use crate::bindings::exports::pack::name::api::*;
+use std::cell::RefCell;
 
 use rand::prelude::*;
 
@@ -61,14 +61,14 @@ fn dispatch_order() -> Result<(), &'static str> {
     Ok(())
 }
 
-/**
- * This holds the state of our application, which is always bound to 
- * a given user.
- */
 thread_local! {
+    /**
+     * This holds the state of our application, which is always bound to
+     * a given user.
+     */
     static STATE: RefCell<State> = RefCell::new(State {
-    user_id: String::new(),
-    items: vec![],
+        user_id: String::new(),
+        items: vec![],
     });
 }
 
@@ -137,16 +137,14 @@ impl Guest for Component {
 
         match result {
             Ok(OrderConfirmation { order_id }) => {
-                CheckoutResult::Success(OrderConfirmation {
-                    order_id,
-                })
+                CheckoutResult::Success(OrderConfirmation { order_id })
             }
             Err(err) => CheckoutResult::Error(err.to_string()),
         }
     }
 
     fn get_cart_contents() -> Vec<ProductItem> {
-        STATE.with_borrow_mut(|state| {
+        STATE.with_borrow(|state| {
             println!("Getting cart contents for user {}", state.user_id);
 
             state.items.clone()

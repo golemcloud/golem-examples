@@ -1,7 +1,7 @@
 mod bindings;
 
-use std::cell::RefCell;
 use crate::bindings::exports::pack::name::api::*;
+use std::cell::RefCell;
 
 /// This is one of any number of data types that our application
 /// uses. Golem will take care to persist all application state,
@@ -11,8 +11,8 @@ struct State {
     total: u64,
 }
 
-/// This holds the state of our application.
 thread_local! {
+    /// This holds the state of our application.
     static STATE: RefCell<State> = RefCell::new(State {
         total: 0,
     });
@@ -26,6 +26,6 @@ impl Guest for Component {
     }
 
     fn get() -> u64 {
-        STATE.with_borrow_mut(|state| state.total)
+        STATE.with_borrow(|state| state.total)
     }
 }
