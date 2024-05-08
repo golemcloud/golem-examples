@@ -1,1 +1,1 @@
-addSbtPlugin("org.scala-js"  % "sbt-scalajs"  % "1.13.2")
+addSbtPlugin("cloud.golem" % "sbt-wasm-component" % "0.1.0")
