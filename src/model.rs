@@ -110,7 +110,7 @@ impl GuestLanguage {
             GuestLanguage::Rust => GuestLanguageTier::Tier1,
             GuestLanguage::Go => GuestLanguageTier::Tier1,
             GuestLanguage::C => GuestLanguageTier::Tier1,
-            GuestLanguage::Zig => GuestLanguageTier::Tier2,
+            GuestLanguage::Zig => GuestLanguageTier::Tier1,
             GuestLanguage::JavaScript => GuestLanguageTier::Tier1,
             GuestLanguage::TypeScript => GuestLanguageTier::Tier1,
             GuestLanguage::CSharp => GuestLanguageTier::Tier3,
