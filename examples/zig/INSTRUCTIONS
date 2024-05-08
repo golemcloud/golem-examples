@@ -2,5 +2,3 @@ See the documentation about installing tooling: https://golem.cloud/learn/zig
 
 Compile the Zig code:
   zig build
-Convert the result into a Component:
-  wasm-tools component new zig-out/bin/main.wasm -o component_name.wasm --adapt adapters/tier2/wasi_snapshot_preview1.wasm

@@ -2,23 +2,20 @@ const std = @import("std");
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 
-pub fn main() anyerror!void {
-    const stdin = std.io.getStdIn().reader();
+const CommandTag = enum { add, get };
+
+const Command = union(CommandTag) { add: i32, get: void };
+
+var state: u64 = 0;
+
+export fn exports_golem_it_api_add(value: u64) void {
     const stdout = std.io.getStdOut().writer();
-    const stderr = std.io.getStdErr().writer();
-
-    var buf: [100]u8 = undefined;
-
-    // Reading parameters from the standard input
-    if (try stdin.readUntilDelimiterOrEof(buf[0..], '\n')) |input| {
-        if (std.fmt.parseInt(u64, input, 10)) |value| {
-            try stderr.print("Returning 2 * {}", .{value});
-
-            const result = 2 * value;
-            // Writing the result to the standard output
-            try stdout.print("{}", .{result});
-        } else |err| {
-            try stderr.print("Input {s} is not a number: {}", .{ input, err });
-        }
-    }
+    stdout.print("Adding {} to state\n", .{value}) catch unreachable;
+    state += value;
 }
+
+export fn exports_golem_it_api_get() u64 {
+    return state;
+}
+
+pub fn main() anyerror!void {}
