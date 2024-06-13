@@ -1,7 +1,5 @@
 package example
 
-import scala.scalajs.js.annotation.{ JSExportAll, JSExportTopLevel }
-
 final case class State(userId: String, items: List[ProductItem]) { self =>
   def withUserId(userId: String): State = self.copy(userId = userId)
 
@@ -21,8 +19,7 @@ object State                                                     {
   val empty = State(userId = "", items = List.empty)
 }
 
-@JSExportTopLevel("api")
-@JSExportAll
+@cloud.golem.WitExport
 object ComponentName extends Api { self =>
   private var state = State.empty
 
