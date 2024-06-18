@@ -1,0 +1,4 @@
+out/
+node_modules/
+src/main.d.ts
+src/interfaces/
