@@ -1,0 +1,13 @@
+{
+  "description": "Example of using fetch with the golem-ts helper lib",
+  "requiresAdapter": false,
+  "requiresGolemHostWIT": true,
+  "requiresWASI": true,
+  "exclude": [
+    "node_modules",
+    "out",
+    "src/interfaces",
+    "src/main.d.ts",
+    "src/main.js"
+  ]
+}

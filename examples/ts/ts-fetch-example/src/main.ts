@@ -1,9 +1,9 @@
 import {asyncToSyncAsResult} from "@golemcloud/golem-ts";
-import {GolemTsFetchExampleApi} from "./interfaces/golem-ts-fetch-example-api";
+import { PackNameApi } from './interfaces/pack-name-api';
 
 let result: any
 
-export const api: typeof GolemTsFetchExampleApi = {
+export const api: typeof PackNameApi = {
     getLastResult(): string {
         return JSON.stringify(result);
     },

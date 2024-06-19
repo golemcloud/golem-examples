@@ -3,8 +3,8 @@
     "stub": "jco transpile wit --name main --no-namespaced-exports --stub --out-dir src && rm -rf src/main.js",
     "buildTs": "rollup --config",
     "checkTs": "tsc",
-    "buildWasm": "jco componentize -w wit -o out/main.wasm out/main.js",
-    "build": "npm run stub && npm run buildTs && npm run buildWasm",
+    "buildWasm": "jco componentize -w wit -o out/component_name.wasm out/main.js",
+    "build": "npm run stub && npm run checkTs && npm run buildTs && npm run buildWasm",
     "clean": "rm -rf out src/interfaces src/main.d.ts"
   },
   "devDependencies": {
