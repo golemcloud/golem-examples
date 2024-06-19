@@ -23,9 +23,9 @@ The following fields are required:
 
 The following fields are optional:
 
-- `requiresAdapter` is a boolean. If true, the appropriate version of the WASI Preview2 to Preview1 adapter is copied into the generated project (based on the guest language) to an `adapters` directory.
-- `requiresGolemHostWIT` is a boolean. If true, the Golem specific WIT interface gets copied into `wit/deps`.
-- `requiresWASI` is a boolean. If true, the WASI Preview2 WIT interfaces which are compatible with Golem Cloud get copied into `wit/deps`.
+- `requiresAdapter` is a boolean, defaults to **true**. If true, the appropriate version of the WASI Preview2 to Preview1 adapter is copied into the generated project (based on the guest language) to an `adapters` directory.
+- `requiresGolemHostWIT` is a boolean, defaults to **false**. If true, the Golem specific WIT interface gets copied into `wit/deps`.
+- `requiresWASI` is a boolean, defaults to **false**. If true, the WASI Preview2 WIT interfaces which are compatible with Golem Cloud get copied into `wit/deps`.
 - `exclude` is a list of sub-paths and works as a simplified `.gitignore` file. It's primary purpose is to help the development loop of working on examples and in the future it will likely be dropped in favor of just using `.gitignore` files.
 
 ### Template rules
@@ -43,5 +43,6 @@ The following occurrences get replaced to the provided component name, applying 
 - `pack::name`
 - `pack:name`
 - `pack_name`
+- `pack-name`
 - `pack/name`
 - `PackName`

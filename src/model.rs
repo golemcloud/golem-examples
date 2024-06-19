@@ -237,6 +237,10 @@ impl PackageName {
     pub fn to_string_with_slash(&self) -> String {
         format!("{}/{}", self.0 .0, self.0 .1)
     }
+
+    pub fn to_kebab_case(&self) -> String {
+        format!("{}-{}", self.0 .0, self.0 .1)
+    }
 }
 
 impl fmt::Display for PackageName {
