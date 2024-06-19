@@ -1,3 +1,5 @@
-out/
 node_modules/
-
+out/
+src/interfaces/
+src/main.d.ts
+src/main.js

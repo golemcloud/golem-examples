@@ -1,5 +1,5 @@
 {
-  "description": "Example of using fetch with the golem-ts helper lib",
+  "description": "Example of using fetch with the golem-ts library",
   "requiresAdapter": false,
   "requiresGolemHostWIT": true,
   "requiresWASI": true,

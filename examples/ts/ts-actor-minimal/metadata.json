@@ -1,8 +1,11 @@
 {
   "description": "A simple stateful Golem actor with no dependencies on external services",
-  "requiresAdapter": true,
+  "requiresAdapter": false,
   "exclude": [
+    "node_modules",
     "out",
-    "node_modules"
+    "src/interfaces",
+    "src/main.d.ts",
+    "src/main.js"
   ]
 }

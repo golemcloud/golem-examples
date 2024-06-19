@@ -1,13 +1,20 @@
 {
-    "type": "module",
-    "scripts": {
-        "stub": "jco transpile wit --no-namespaced-exports --stub --name main -o src && rm src/main.js && mv src/main.d.ts src/main.ts",
-        "build": "tsc && jco componentize -w wit -o out/component_name.wasm out/main.js"
-    },
-    "devDependencies": {
-        "@bytecodealliance/componentize-js": "0.8.3",
-        "@bytecodealliance/jco": "1.1.1",
-        "@bytecodealliance/preview2-shim": "0.16.1",
-        "typescript": "5.4.5"
-    }
+  "scripts": {
+    "stub": "jco transpile wit --name main --no-namespaced-exports --stub --out-dir src && rm -rf src/main.js",
+    "buildTs": "rollup --config",
+    "checkTs": "tsc",
+    "buildWasm": "jco componentize -w wit -o out/component_name.wasm out/main.js",
+    "build": "npm run stub && npm run checkTs && npm run buildTs && npm run buildWasm",
+    "clean": "rm -rf out src/interfaces src/main.d.ts"
+  },
+  "devDependencies": {
+    "@golemcloud/componentize-js": "0.8.3-golem.3",
+    "@golemcloud/golem-ts": "0.1.0",
+    "@golemcloud/jco": "1.2.4-golem.3",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/node": "^20.14.2",
+    "rollup": "^4.18.0",
+    "tslib": "^2.6.3"
+  }
 }
