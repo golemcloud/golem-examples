@@ -6,7 +6,7 @@
   "exclude": [
     "node_modules",
     "out",
-    "src/interfaces",
+    "src/generated",
     "src/main.d.ts",
     "src/main.js"
   ]
