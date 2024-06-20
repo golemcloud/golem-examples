@@ -1,6 +1,8 @@
 {
-  "description": "A simple stateful Golem actor with no dependencies on external services",
+  "description": "Example of using fetch with the golem-ts library",
   "requiresAdapter": false,
+  "requiresGolemHostWIT": true,
+  "requiresWASI": true,
   "exclude": [
     "node_modules",
     "out",

@@ -195,6 +195,7 @@ fn transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> String {
         )
         .replace("pack:name", &parameters.package_name.to_string_with_colon())
         .replace("pack_name", &parameters.package_name.to_snake_case())
+        .replace("pack-name", &parameters.package_name.to_kebab_case())
         .replace("pack/name", &parameters.package_name.to_string_with_slash())
         .replace("PackName", &parameters.package_name.to_pascal_case())
 }
