@@ -4,7 +4,7 @@ This project serves as an example/template for building an application using [We
 
 ## Problem statement
 
-The [`cargo-component`](https://github.com/bytecodealliance/cargo-component) project by Bytecode Alliance greatly smooths out the development process in building WebAssembly Component Model applications (in Rust).  You will define your app's public data structures (records and enums) and function interfaces in a [`wit` (Wasm interface type)](https://github.com/WebAssembly/component-model/blob/main/design/mvp/WIT.md) file, which is then used to generate the Rust bindings for your Wasm component.  The generated code sits in a module somewhere inside the `target` directory.  Running `cargo component build` will build a valid codebase successfully.
+The [`cargo-component`](https://github.com/bytecodealliance/cargo-component) project by Bytecode Alliance greatly smooths out the development process in building WebAssembly Component Model applications (in Rust).  You will define your app's public data structures (records and enums) and function interfaces in a [`wit` (Wasm interface type)](https://component-model.bytecodealliance.org/design/wit.html) file, which is then used to generate the Rust bindings for your Wasm component.  The generated code sits in a module somewhere inside the `target` directory.  Running `cargo component build` will build a valid codebase successfully.
 
 Sadly, as of this writing, the regular Rust tooling (e.g. rust-analyzer) lacks visibility to this module.  As a result, red squiggly lines will likely appear in our IDE for any data types defined in the `wit` file. Additionally, `cargo test` will fail because it cannot resolve those references.
 

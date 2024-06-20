@@ -6,8 +6,8 @@ mod bindings;
 
 use bindings::*;
 use exports::pack::name::api::{
-    Guest, Auction as WitAuction, AuctionId as WitAuctionId, BidderId as WitBidderId,
-    Deadline as WitDeadline,
+    Auction as WitAuction, AuctionId as WitAuctionId, BidderId as WitBidderId,
+    Deadline as WitDeadline, Guest,
 };
 use once_cell::sync::Lazy;
 
@@ -62,3 +62,5 @@ impl Guest for Component {
         })
     }
 }
+
+bindings::export!(Component with_types_in bindings);

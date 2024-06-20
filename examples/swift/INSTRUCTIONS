@@ -1,4 +1,4 @@
-See the documentation about installing tooling: https://golem.cloud/learn/swift
+See the documentation about installing tooling: https://learn.golem.cloud/docs/building-components/tier-2/swift
 
 Compile the Swift code with SwiftWasm:
   /Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin/swiftc -target wasm32-unknown-wasi main.swift -o component_name.module.wasm -sdk /Library/Developer/Toolchains/swift-wasm-5.7.3-RELEASE.xctoolchain/usr/share/wasi-sysroot/

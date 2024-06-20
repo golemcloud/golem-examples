@@ -29,3 +29,5 @@ impl Guest for Component {
         STATE.with_borrow(|state| state.total)
     }
 }
+
+bindings::export!(Component with_types_in bindings);

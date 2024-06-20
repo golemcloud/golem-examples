@@ -1,4 +1,4 @@
-See the documentation about installing tooling: https://golem.cloud/learn/javascript
+See the documentation about installing tooling: https://learn.golem.cloud/docs/building-components/tier-1/javascript
 
 Compile the JavaScript project with npm:
   npm install

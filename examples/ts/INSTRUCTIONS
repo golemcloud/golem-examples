@@ -1,3 +1,5 @@
+See the documentation about installing tooling: https://learn.golem.cloud/docs/building-components/tier-1/typescript
+
 Compile the TypeScript project with npm:
 ```bash
 npm install
@@ -11,4 +13,3 @@ npm run stub
 ```
 
 This will generate the typescript declaration files in `src/interfaces`
-
