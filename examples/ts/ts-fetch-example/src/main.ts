@@ -1,9 +1,9 @@
 import {asyncToSyncAsResult} from "@golemcloud/golem-ts";
-import { PackNameApi } from './interfaces/pack-name-api';
+import { Api } from './generated/component-name';
 
 let result: any
 
-export const api: typeof PackNameApi = {
+export const api: Api = {
     getLastResult(): string {
         return JSON.stringify(result);
     },
