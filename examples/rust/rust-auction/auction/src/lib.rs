@@ -5,7 +5,7 @@ mod bindings;
 
 use bindings::*;
 use exports::pack::name::api::{
-    Guest, Auction as WitAuction, BidResult as WitBidResult, BidderId as WitBidderId,
+    Auction as WitAuction, BidResult as WitBidResult, BidderId as WitBidderId, Guest,
 };
 use once_cell::sync::Lazy;
 
@@ -41,3 +41,5 @@ impl Guest for Component {
         with_state(|state| auction_logic::close_auction(state).map(|bidder_id| bidder_id.into()))
     }
 }
+
+bindings::export!(Component with_types_in bindings);

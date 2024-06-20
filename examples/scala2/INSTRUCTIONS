@@ -1,4 +1,4 @@
-See the documentation about installing tooling: https://golem.cloud/learn/scala2
+See the documentation about installing tooling: https://learn.golem.cloud/docs/building-components/tier-1/scala
 
 Build the project with sbt:
   sbt component
