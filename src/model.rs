@@ -105,6 +105,22 @@ impl GuestLanguage {
         }
     }
 
+    pub fn id(&self) -> String {
+        match self {
+            GuestLanguage::Rust => "rust".to_string(),
+            GuestLanguage::Go => "go".to_string(),
+            GuestLanguage::C => "c".to_string(),
+            GuestLanguage::Zig => "zig".to_string(),
+            GuestLanguage::JavaScript => "js".to_string(),
+            GuestLanguage::TypeScript => "ts".to_string(),
+            GuestLanguage::CSharp => "cs".to_string(),
+            GuestLanguage::Swift => "swift".to_string(),
+            GuestLanguage::Grain => "grain".to_string(),
+            GuestLanguage::Python => "python".to_string(),
+            GuestLanguage::Scala2 => "scala2".to_string(),
+        }
+    }
+
     pub fn tier(&self) -> GuestLanguageTier {
         match self {
             GuestLanguage::Rust => GuestLanguageTier::Tier1,

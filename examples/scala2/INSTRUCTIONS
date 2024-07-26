@@ -1,6 +1,0 @@
-See the documentation about installing tooling: https://learn.golem.cloud/docs/building-components/tier-1/scala
-
-Build the project with sbt:
-  sbt component
-
-The `target/dist/component-name.wasm` file is ready to be uploaded to Golem Cloud!

@@ -1,0 +1,10 @@
+{
+  "description": "A stateful Golem worker in JavaScript with no dependencies on external services",
+  "requiresAdapter": true,
+  "requiresGolemHostWIT": true,
+  "requiresWASI": true,
+  "exclude": [
+    "out",
+    "node_modules"
+  ]
+}
