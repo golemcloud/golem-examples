@@ -5,26 +5,36 @@ use golem_examples::model::{
 use golem_examples::*;
 use std::env;
 
+
+#[derive(Args, Debug)]
+#[group(required = true, multiple = false)]
+struct NameOrLanguage {
+    #[arg(short, long, group = "ex")]
+    example: Option<ExampleName>,
+
+    #[arg(short, long, alias = "lang", group = "ex")]
+    language: Option<GuestLanguage>,
+}
+
 #[derive(Subcommand, Debug)]
 #[command()]
 enum Command {
     #[command()]
     New {
-        #[arg(short, long)]
-        example: ExampleName,
-
-        #[arg(short, long)]
-        component_name: ComponentName,
+        #[command(flatten)]
+        name_or_language: NameOrLanguage,
 
         #[arg(short, long)]
         package_name: Option<PackageName>,
+
+        component_name: ComponentName,
     },
     #[command()]
     ListExamples {
         #[arg(short, long)]
         min_tier: Option<GuestLanguageTier>,
 
-        #[arg(short, long)]
+        #[arg(short, long, alias = "lang")]
         language: Option<GuestLanguage>,
     },
 }
@@ -40,14 +50,17 @@ pub fn main() {
     let command: GolemCommand = GolemCommand::parse();
     match &command.command {
         Command::New {
-            example: example_name,
+            name_or_language,
             component_name,
             package_name,
         } => {
+            let example_name = name_or_language.example.clone().unwrap_or(
+                ExampleName::from_string(format!("{}-default", name_or_language.language.clone().unwrap_or(GuestLanguage::Rust).id()))
+            );
             let examples = GolemExamples::list_all_examples();
             let example = examples
                 .iter()
-                .find(|example| example.name == *example_name);
+                .find(|example| example.name == example_name);
             match example {
                 Some(example) => {
                     let cwd = env::current_dir().expect("Failed to get current working directory");

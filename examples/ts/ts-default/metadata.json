@@ -1,0 +1,13 @@
+{
+  "description": "A stateful Golem worker implemented in TypeScript with full access to WASI and the Golem runtime APIs",
+  "requiresAdapter": false,
+  "requiresGolemHostWIT": true,
+  "requiresWASI": true,
+  "exclude": [
+    "node_modules",
+    "out",
+    "src/generated",
+    "src/main.d.ts",
+    "src/main.js"
+  ]
+}

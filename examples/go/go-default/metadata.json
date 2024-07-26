@@ -1,0 +1,10 @@
+{
+  "description": "A stateful Golem worker written in Go with full support for WASI and Golem runtime APIs",
+  "requiresAdapter": true,
+  "requiresGolemHostWIT": true,
+  "requiresWASI": true,
+  "exclude": [
+    "component_name",
+    "main.wasm"
+  ]
+}

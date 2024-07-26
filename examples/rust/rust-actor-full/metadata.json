@@ -1,7 +1,0 @@
-{
-  "description": "A stateful Golem actor written in Rust, capable of calling HTTP endpoints and using the Promise API",
-  "requiresAdapter": false,
-  "requiresGolemHostWIT": true,
-  "requiresWASI": true,
-  "exclude": ["target"]
-}

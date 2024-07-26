@@ -1,0 +1,8 @@
+{
+  "description": "A simple stateful Golem worker in JavaScript with no dependencies on external services",
+  "requiresAdapter": true,
+  "exclude": [
+    "out",
+    "node_modules"
+  ]
+}
