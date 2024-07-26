@@ -5,7 +5,6 @@ use golem_examples::model::{
 use golem_examples::*;
 use std::env;
 
-
 #[derive(Args, Debug)]
 #[group(required = true, multiple = false)]
 struct NameOrLanguage {
@@ -54,13 +53,20 @@ pub fn main() {
             component_name,
             package_name,
         } => {
-            let example_name = name_or_language.example.clone().unwrap_or(
-                ExampleName::from_string(format!("{}-default", name_or_language.language.clone().unwrap_or(GuestLanguage::Rust).id()))
-            );
+            let example_name =
+                name_or_language
+                    .example
+                    .clone()
+                    .unwrap_or(ExampleName::from_string(format!(
+                        "{}-default",
+                        name_or_language
+                            .language
+                            .clone()
+                            .unwrap_or(GuestLanguage::Rust)
+                            .id()
+                    )));
             let examples = GolemExamples::list_all_examples();
-            let example = examples
-                .iter()
-                .find(|example| example.name == example_name);
+            let example = examples.iter().find(|example| example.name == example_name);
             match example {
                 Some(example) => {
                     let cwd = env::current_dir().expect("Failed to get current working directory");
