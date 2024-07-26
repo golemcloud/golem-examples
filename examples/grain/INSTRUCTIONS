@@ -1,4 +1,4 @@
-See the documentation about installing tooling: https://learn.golem.cloud/docs/building-components/tier-2/grain
+See the documentation about installing tooling: https://learn.golem.cloud/docs/experimental-languages/grain-language-guide/setup
 
 Compile the Grain project:
   grain compile --release main.gr

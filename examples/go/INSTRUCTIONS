@@ -1,4 +1,4 @@
-See the documentation about installing tooling: https://learn.golem.cloud/docs/building-components/tier-1/go
+See the documentation about installing tooling: https://learn.golem.cloud/docs/go-language-guide/setup
 
 Generate bindings from WIT:
   wit-bindgen tiny-go --out-dir component_name ./wit

@@ -1,4 +1,4 @@
-See the documentation about installing tooling: https://learn.golem.cloud/docs/building-components/tier-1/python
+See the documentation about installing tooling: https://learn.golem.cloud/docs/python-language-guide/setup
 
 Generate bindings from WIT:
   componentize-py bindings bindings

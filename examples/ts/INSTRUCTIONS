@@ -1,4 +1,4 @@
-See the documentation about installing tooling: https://learn.golem.cloud/docs/building-components/tier-1/typescript
+See the documentation about installing tooling: https://learn.golem.cloud/docs/experimental-languages/js-ts/setup
 
 Compile the TypeScript project with npm:
 ```bash
