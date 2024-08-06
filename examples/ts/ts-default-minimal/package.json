@@ -6,8 +6,8 @@
     "clean": "rm -rf out src/interfaces src/main.d.ts"
   },
   "devDependencies": {
-    "@golemcloud/componentize-js": "0.8.3-golem.3",
-    "@golemcloud/jco": "1.2.4-golem.4",
+    "@golemcloud/componentize-js": "0.10.2-golem.1",
+    "@golemcloud/jco": "1.4.0-golem.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "rollup-plugin-typescript2": "^0.36.0",
     "@types/node": "^20.14.2",
