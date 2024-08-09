@@ -6,6 +6,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 
+#[cfg(feature = "cli")]
 pub mod cli;
 pub mod model;
 
