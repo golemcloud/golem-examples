@@ -35,5 +35,5 @@ path = "src/lib.rs"
 
 [[bin]]
 name = "golem-examples-cli"
-path = "src/cli.rs"
-required-features = ["build-binary"]
+path = "src/main.rs"
+required-features = ["cli"]

@@ -1,20 +1,17 @@
 use clap::*;
-use golem_examples::model::{
-    ComponentName, ExampleName, ExampleParameters, GuestLanguage, GuestLanguageTier, PackageName,
-};
-use golem_examples::*;
-use std::env;
+
+use crate::model::{ComponentName, ExampleName, GuestLanguage, GuestLanguageTier, PackageName};
 
 #[derive(Args, Debug)]
 #[group(required = true, multiple = false)]
 pub struct NameOrLanguage {
     /// Name of the example to use
     #[arg(short, long, group = "ex")]
-    example: Option<ExampleName>,
+    pub example: Option<ExampleName>,
 
     /// Language to use for it's default example
     #[arg(short, long, alias = "lang", group = "ex")]
-    language: Option<GuestLanguage>,
+    pub language: Option<GuestLanguage>,
 }
 
 impl NameOrLanguage {
@@ -63,54 +60,5 @@ pub enum Command {
 #[command(author, version, about, long_about = None, rename_all = "kebab-case")]
 pub struct GolemCommand {
     #[command(subcommand)]
-    command: Command,
-}
-
-pub fn main() {
-    let command: GolemCommand = GolemCommand::parse();
-    match &command.command {
-        Command::New {
-            name_or_language,
-            component_name,
-            package_name,
-        } => {
-            let example_name = name_or_language.example_name();
-            let examples = GolemExamples::list_all_examples();
-            let example = examples.iter().find(|example| example.name == example_name);
-            match example {
-                Some(example) => {
-                    let cwd = env::current_dir().expect("Failed to get current working directory");
-                    match GolemExamples::instantiate(
-                        example,
-                        ExampleParameters {
-                            component_name: component_name.clone(),
-                            package_name: package_name
-                                .clone()
-                                .unwrap_or(PackageName::from_string("golem:component").unwrap()),
-                            target_path: cwd,
-                        },
-                    ) {
-                        Ok(instructions) => println!("{instructions}"),
-                        Err(err) => eprintln!("Failed to instantiate example: {err}"),
-                    }
-                }
-                None => {
-                    eprintln!("Unknown example {example_name}. Use the list-examples command to see the available commands.");
-                }
-            }
-        }
-        Command::ListExamples { min_tier, language } => {
-            GolemExamples::list_all_examples()
-                .iter()
-                .filter(|example| match language {
-                    Some(language) => example.language == *language,
-                    None => true,
-                })
-                .filter(|example| match min_tier {
-                    Some(min_tier) => example.language.tier() <= *min_tier,
-                    None => true,
-                })
-                .for_each(|example| println!("{:?}", example));
-        }
-    }
+    pub command: Command,
 }
