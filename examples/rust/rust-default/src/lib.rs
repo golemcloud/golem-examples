@@ -1,11 +1,7 @@
 mod bindings;
 
 use crate::bindings::exports::pack::name::api::*;
-use crate::bindings::golem::api::host::*;
 use std::cell::RefCell;
-
-use reqwest::{Client, Response};
-use serde::{Deserialize, Serialize};
 
 /// This is one of any number of data types that our application
 /// uses. Golem will take care to persist all application state,
