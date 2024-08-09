@@ -6,6 +6,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 
+pub mod cli;
 pub mod model;
 
 pub trait Examples {
