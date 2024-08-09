@@ -27,12 +27,13 @@ copy_dir = "0.1.3"
 dir-diff = "0.3.3"
 
 [features]
-build-binary = ["clap"]
+default = ["cli"]
+cli = ["dep:clap"]
 
 [lib]
 path = "src/lib.rs"
 
 [[bin]]
 name = "golem-examples-cli"
-path = "src/cli.rs"
-required-features = ["build-binary"]
+path = "src/main.rs"
+required-features = ["cli"]
