@@ -54,6 +54,14 @@ pub enum Command {
         #[arg(short, long, alias = "lang")]
         language: Option<GuestLanguage>,
     },
+
+    // Generates and builds the examples components
+    #[command()]
+    TestExamples {
+        // Filter examples by name, checks if the example name contains the filter string
+        #[arg(short, long)]
+        filter: Option<String>,
+    },
 }
 
 #[derive(Parser, Debug)]

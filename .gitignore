@@ -1,6 +1,7 @@
-templates/**/*.wasm
-/target
-.idea
 .DS_Store
+.idea
+/examples-test/
+/target
 node_modules
+templates/**/*.wasm
 tmp
