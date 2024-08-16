@@ -8,10 +8,6 @@ interface api {
 }
 
 world component-name {
-  export api;
-}
-
-world component-name-imports {
   import golem:api/host@0.2.0;
   import golem:rpc/types@0.1.0;
 
@@ -36,5 +32,5 @@ world component-name-imports {
   import wasi:sockets/ip-name-lookup@0.2.0;
   import wasi:sockets/instance-network@0.2.0;
 
-  include component-name;
+  export api;
 }

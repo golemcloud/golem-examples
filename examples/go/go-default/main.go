@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/golemcloud/golem-go/roundtrip"
-	"pack/name/component_name"
+	"github.com/golemcloud/golem-go/std"
 
-	"net/http"
+	"pack/name/component_name"
 )
 
 type RequestBody struct {
@@ -16,9 +15,7 @@ type ResponseBody struct {
 }
 
 func init() {
-	a := ComponentNameImpl{}
-	component_name.SetExportsPackNameApi(a)
-	http.DefaultClient.Transport = roundtrip.WasiHttpTransport{}
+	component_name.SetExportsPackNameApi(&ComponentNameImpl{})
 }
 
 // total State can be stored in global variables
@@ -29,11 +26,15 @@ type ComponentNameImpl struct {
 
 // Implementation of the exported interface
 
-func (e ComponentNameImpl) Add(value uint64) {
+func (e *ComponentNameImpl) Add(value uint64) {
+	std.Init(std.Packages{Os: true, NetHttp: true})
+
 	total += value
 }
 
-func (e ComponentNameImpl) Get() uint64 {
+func (e *ComponentNameImpl) Get() uint64 {
+	std.Init(std.Packages{Os: true, NetHttp: true})
+
 	return total
 }
 

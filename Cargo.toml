@@ -8,6 +8,8 @@ repository = "https://github.com/golemcloud/golem-examples"
 description = "Golem example templates"
 
 [dependencies]
+clap = { version = "4.4.17", features = ["derive"], optional = true }
+colored = "2.1.0"
 derive_more = "0.99.17"
 golem-wit = { version = "0.4.0" }
 include_dir = { version = "0.7.3" }
@@ -18,8 +20,6 @@ serde = { version = "1.0.195", features = ["derive"] }
 serde_json = { version = "1.0.111" }
 strum = "0.26.1"
 strum_macros = "0.26.1"
-
-clap = { version = "4.4.17", features = ["derive"], optional = true }
 
 [build-dependencies]
 cargo_metadata = "0.18.1"
