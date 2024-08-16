@@ -57,6 +57,6 @@ cargo run --bin golem-examples-test-cli test-examples -f go
 
 The necessary tooling for the specific language is expected to be available.
 
-Currently building is only for the TypeScript and Go examples, the others will be generated, but building will fail. 
+Currently building is implemented only for the TypeScript, Rust and Go examples, the others will be generated, but building will fail. 
 
 The examples are generated in the `/examples-test` directory.

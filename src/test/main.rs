@@ -123,6 +123,7 @@ fn test_example(example: &Example) -> Result<(), String> {
     .map_err(|e| format!("instantiate failed: {}", e))?;
 
     match &example.language {
+        GuestLanguage::Rust => run("cargo", vec!["component", "build", "--release"]),
         GuestLanguage::Go => run("make", vec!["build"]),
         GuestLanguage::TypeScript => {
             run("npm", vec!["install"])?;
