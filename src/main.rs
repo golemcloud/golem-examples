@@ -130,7 +130,7 @@ fn test_example(example: &Example) -> Result<(), String> {
             .map_err(|e| run_failed(e.to_string()))?;
 
         match status.code() {
-            Some(code) if code == 0 => Ok(()),
+            Some(0) => Ok(()),
             Some(code) => Err(run_failed(format!("non-zero exit code: {}", code))),
             None => Err(run_failed("terminated".to_string())),
         }
@@ -151,7 +151,7 @@ fn test_example(example: &Example) -> Result<(), String> {
             target_path,
         },
     )
-    .map_err(|e| format!("instantiate failed: {}", e.to_string()))?;
+    .map_err(|e| format!("instantiate failed: {}", e))?;
 
     match &example.language {
         GuestLanguage::Go => run("make", vec!["build"]),
@@ -159,6 +159,6 @@ fn test_example(example: &Example) -> Result<(), String> {
             run("npm", vec!["install"])?;
             run("npm", vec!["run", "componentize"])
         }
-        other => return Err(format!("build not implemented for {}", other.name())),
+        other => Err(format!("build not implemented for {}", other.name())),
     }
 }
