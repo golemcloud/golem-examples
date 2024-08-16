@@ -65,7 +65,7 @@ impl Examples for GolemExamples {
             &parameters
                 .target_path
                 .join(parameters.component_name.as_string()),
-            &parameters,
+            parameters,
             &example.exclude,
             true,
         )?;
@@ -93,7 +93,7 @@ impl Examples for GolemExamples {
                     .join(wit_dep.file_name().unwrap().to_str().unwrap()),
             )?;
         }
-        Ok(Self::instructions(example, &parameters))
+        Ok(Self::instructions(example, parameters))
     }
 
     fn instructions(example: &Example, parameters: &ExampleParameters) -> String {
