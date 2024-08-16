@@ -1,3 +1,5 @@
+.PHONY: build bindings compile clean
+
 build: compile
 	wasm-tools component new component_name.module.wasm -o component_name.wasm --adapt adapters/tier1/wasi_snapshot_preview1.wasm
 
