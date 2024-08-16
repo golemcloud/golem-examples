@@ -1,8 +1,10 @@
+use std::env;
+
 use clap::Parser;
+
 use golem_examples::cli::*;
 use golem_examples::model::*;
 use golem_examples::{Examples, GolemExamples};
-use std::env;
 
 pub fn main() {
     let command: GolemCommand = GolemCommand::parse();

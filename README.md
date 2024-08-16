@@ -46,3 +46,17 @@ The following occurrences get replaced to the provided component name, applying 
 - `pack-name`
 - `pack/name`
 - `PackName`
+
+### Testing the examples
+The example generation and building can be tested with a test [cli app](/src/test/main.rs).
+The app also accepts a filter argument, which matches for the example name, eg. to test the go examples use:
+
+```shell
+cargo run --bin golem-examples-test-cli test-examples -f go
+```
+
+The necessary tooling for the specific language is expected to be available.
+
+Currently building is implemented only for the TypeScript, Rust and Go examples, the others will be generated, but building will fail. 
+
+The examples are generated in the `/examples-test` directory.

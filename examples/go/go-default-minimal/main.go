@@ -5,8 +5,7 @@ import (
 )
 
 func init() {
-	a := ComponentNameImpl{}
-	component_name.SetExportsPackNameApi(a)
+	component_name.SetExportsPackNameApi(&ComponentNameImpl{})
 }
 
 // total State can be stored in global variables
@@ -17,12 +16,11 @@ type ComponentNameImpl struct {
 
 // Implementation of the exported interface
 
-
-func (e ComponentNameImpl) Add(value uint64) {
+func (e *ComponentNameImpl) Add(value uint64) {
 	total += value
 }
 
-func (e ComponentNameImpl) Get() uint64 {
+func (e *ComponentNameImpl) Get() uint64 {
     return total
 }
 
