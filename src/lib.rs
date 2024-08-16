@@ -12,7 +12,8 @@ pub mod model;
 
 pub trait Examples {
     fn list_all_examples() -> Vec<Example>;
-    fn instantiate(example: &Example, parameters: ExampleParameters) -> io::Result<String>;
+    fn instantiate(example: &Example, parameters: &ExampleParameters) -> io::Result<String>;
+    fn instructions(example: &Example, parameters: &ExampleParameters) -> String;
 }
 
 pub struct GolemExamples {}
@@ -57,7 +58,7 @@ impl Examples for GolemExamples {
         result
     }
 
-    fn instantiate(example: &Example, parameters: ExampleParameters) -> io::Result<String> {
+    fn instantiate(example: &Example, parameters: &ExampleParameters) -> io::Result<String> {
         instantiate_directory(
             &EXAMPLES,
             &example.example_path,
@@ -92,7 +93,11 @@ impl Examples for GolemExamples {
                     .join(wit_dep.file_name().unwrap().to_str().unwrap()),
             )?;
         }
-        Ok(transform(&example.instructions, &parameters))
+        Ok(Self::instructions(example, &parameters))
+    }
+
+    fn instructions(example: &Example, parameters: &ExampleParameters) -> String {
+        transform(&example.instructions, parameters)
     }
 }
 

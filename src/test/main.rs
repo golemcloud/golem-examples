@@ -4,64 +4,62 @@ use std::process::exit;
 use clap::Parser;
 use colored::{ColoredString, Colorize};
 
-use golem_examples::model::{
-    ComponentName, Example, ExampleParameters, GuestLanguage, PackageName,
-};
+use golem_examples::model::{ComponentName, Example, ExampleParameters, PackageName};
 use golem_examples::{Examples, GolemExamples};
 
 #[derive(Parser, Debug)]
 #[command()]
-pub enum Command {
-    // Generates and builds the examples components
-    #[command()]
-    TestExamples {
-        // Filter examples by name, checks if the example name contains the filter string
-        #[arg(short, long)]
-        filter: Option<String>,
-    },
+pub struct Command {
+    // Filter examples by name, checks if the example name contains the filter string
+    #[arg(short, long)]
+    filter: Option<String>,
+
+    // Skip running instructions
+    #[arg(long)]
+    skip_instructions: bool,
+
+    // Skip instantiating projects
+    #[arg(long)]
+    skip_instantiate: bool,
 }
 
 pub fn main() {
     let command = Command::parse();
-    match &command {
-        Command::TestExamples { filter } => {
-            let results: Vec<(Example, Result<(), String>)> = GolemExamples::list_all_examples()
-                .iter()
-                .filter(|example| match filter {
-                    Some(filter) => example.name.as_string().contains(filter),
-                    None => true,
-                })
-                .map(|example| {
-                    let result = test_example(example);
-                    if let Err(err) = &result {
-                        println!("{}", err.bright_red())
-                    }
-                    (example.clone(), result)
-                })
-                .collect();
-
-            println!();
-            for result in &results {
-                println!(
-                    "{}: {}",
-                    result.0.name.to_string().bold(),
-                    match &result.1 {
-                        Ok(_) => "OK".bright_green(),
-                        Err(err) =>
-                            ColoredString::from(format!("{}\n{}", "Failed".bright_red(), err.red())),
-                    }
-                )
+    let results: Vec<(Example, Result<(), String>)> = GolemExamples::list_all_examples()
+        .iter()
+        .filter(|example| match &command.filter {
+            Some(filter) => example.name.as_string().contains(filter),
+            None => true,
+        })
+        .map(|example| {
+            let result = test_example(&command, example);
+            if let Err(err) = &result {
+                println!("{}", err.bright_red())
             }
-            println!();
+            (example.clone(), result)
+        })
+        .collect();
 
-            if results.iter().any(|r| r.1.is_err()) {
-                exit(1)
+    println!();
+    for result in &results {
+        println!(
+            "{}: {}",
+            result.0.name.to_string().bold(),
+            match &result.1 {
+                Ok(_) => "OK".bright_green(),
+                Err(err) =>
+                    ColoredString::from(format!("{}\n{}", "Failed".bright_red(), err.red())),
             }
-        }
+        )
+    }
+    println!();
+
+    if results.iter().any(|r| r.1.is_err()) {
+        exit(1)
     }
 }
 
-fn test_example(example: &Example) -> Result<(), String> {
+fn test_example(command: &Command, example: &Example) -> Result<(), String> {
     println!();
     println!(
         "{} {}",
@@ -82,6 +80,12 @@ fn test_example(example: &Example) -> Result<(), String> {
         "Component path: {}",
         component_path.display().to_string().blue()
     );
+
+    let example_parameters = ExampleParameters {
+        component_name,
+        package_name,
+        target_path,
+    };
 
     let run = |command: &str, args: Vec<&str>| -> Result<(), String> {
         let command_formatted = format!("{} {}", command, args.join(" "));
@@ -105,30 +109,40 @@ fn test_example(example: &Example) -> Result<(), String> {
         }
     };
 
-    if component_path.exists() {
-        println!("Deleting {}", component_path.display().to_string().blue());
-        std::fs::remove_dir_all(&component_path)
-            .map_err(|e| format!("remove dir all failed: {}", e))?;
-    }
+    if command.skip_instantiate {
+        println!("Skipping instantiate")
+    } else {
+        println!("Instantiating");
 
-    println!("Instantiating");
-    let _ = GolemExamples::instantiate(
-        example,
-        ExampleParameters {
-            component_name,
-            package_name,
-            target_path,
-        },
-    )
-    .map_err(|e| format!("instantiate failed: {}", e))?;
-
-    match &example.language {
-        GuestLanguage::Rust => run("cargo", vec!["component", "build", "--release"]),
-        GuestLanguage::Go => run("make", vec!["build"]),
-        GuestLanguage::TypeScript => {
-            run("npm", vec!["install"])?;
-            run("npm", vec!["run", "componentize"])
+        if component_path.exists() {
+            println!("Deleting {}", component_path.display().to_string().blue());
+            std::fs::remove_dir_all(&component_path)
+                .map_err(|e| format!("remove dir all failed: {}", e))?;
         }
-        other => Err(format!("build not implemented for {}", other.name())),
+
+        let _ = GolemExamples::instantiate(example, &example_parameters)
+            .map_err(|e| format!("instantiate failed: {}", e))?;
+
+        println!("Successfully instantiated the example");
     }
+
+    if command.skip_instructions {
+        println!("Skipping instructions\n");
+    } else {
+        println!("Executing instructions\n");
+        let instructions = GolemExamples::instructions(example, &example_parameters);
+        for line in instructions.lines() {
+            if line.starts_with("  ") {
+                match run("bash", vec!["-c", line]) {
+                    Ok(_) => {}
+                    Err(err) => return Err(err.to_string()),
+                }
+            } else {
+                println!("> {}", line.magenta())
+            }
+        }
+        println!("Successfully executed instructions\n");
+    }
+
+    Ok(())
 }
