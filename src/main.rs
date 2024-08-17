@@ -22,7 +22,7 @@ pub fn main() {
                     let cwd = env::current_dir().expect("Failed to get current working directory");
                     match GolemExamples::instantiate(
                         example,
-                        ExampleParameters {
+                        &ExampleParameters {
                             component_name: component_name.clone(),
                             package_name: package_name
                                 .clone()

@@ -1,4 +1,4 @@
-See the documentation about installing tooling: https://learn.golem.cloud/docs/experimental-languages/js-ts/setup
+See the documentation about installing tooling: https://learn.golem.cloud/docs/experimental-languages/ts-language-guide/setup
 
 Compile the TypeScript project with npm:
   npm install
@@ -6,8 +6,16 @@ Compile the TypeScript project with npm:
 
 The `out/component_name.wasm` file is ready to be uploaded to Golem Cloud!
 
-All npm run commands:
-  - stub: generates TypeScript mappings from the wit files
-  - build: compiles and bundles the TypeScript sources
-  - componentize: runs stub and build, then creates the wasm file for the component
-  - clean: "rm -rf out src/interfaces src/main.d.ts"
+Other available npm scripts:
+
+- Generating TypeScript mappings from the wit files:
+  npm run stub
+
+- Compile and bundle the TypeScript sources:
+  npm run build
+
+- Clean the project:
+  npm run clean
+
+- Componentizing (includes stub and build steps too):
+  npm run componentize
