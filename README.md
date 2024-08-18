@@ -49,10 +49,16 @@ The following occurrences get replaced to the provided component name, applying 
 
 ### Testing the examples
 The example generation and instructions can be tested with a test [cli app](/src/test/main.rs).
-The app also accepts a filter argument, which matches for the example name, eg. to test the go examples use:
+The app also accepts a filter argument, which matches for the example name as regular expressions, eg. to test the go examples use:
 
 ```shell
 cargo run --bin golem-examples-test-cli -- -f go
+```
+
+Or to exactly match an example name:
+
+```shell
+cargo run --bin golem-examples-test-cli -- -f '^go-default$'
 ```
 
 The necessary tooling for the specific language is expected to be available.

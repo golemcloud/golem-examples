@@ -6,8 +6,6 @@
   "exclude": [
     "node_modules",
     "out",
-    "src/generated",
-    "src/main.d.ts",
-    "src/main.js"
+    "src/generated"
   ]
 }

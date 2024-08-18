@@ -1,10 +1,10 @@
 {
-  "description": "A stateful Golem worker in JavaScript with no dependencies on external services",
-  "requiresAdapter": true,
+  "description": "A stateful Golem worker implemented in JavaScript with full access to WASI and the Golem runtime APIs",
+  "requiresAdapter": false,
   "requiresGolemHostWIT": true,
   "requiresWASI": true,
   "exclude": [
-    "out",
-    "node_modules"
+    "node_modules",
+    "out"
   ]
 }

@@ -1,8 +1,10 @@
 use std::path::PathBuf;
 use std::process::exit;
+use std::str::FromStr;
 
 use clap::Parser;
 use colored::{ColoredString, Colorize};
+use regex::Regex;
 
 use golem_examples::model::{ComponentName, Example, ExampleParameters, PackageName};
 use golem_examples::{Examples, GolemExamples};
@@ -21,14 +23,21 @@ pub struct Command {
     // Skip instantiating projects
     #[arg(long)]
     skip_instantiate: bool,
+
+    #[arg(long)]
+    target_path: Option<String>,
 }
 
 pub fn main() {
     let command = Command::parse();
+    let filter = command
+        .filter
+        .as_ref()
+        .map(|filter| Regex::from_str(filter.as_str()).expect("failed to compile regex"));
     let results: Vec<(Example, Result<(), String>)> = GolemExamples::list_all_examples()
         .iter()
-        .filter(|example| match &command.filter {
-            Some(filter) => example.name.as_string().contains(filter),
+        .filter(|example| match &filter {
+            Some(filter) => filter.is_match(example.name.as_string()),
             None => true,
         })
         .map(|example| {
@@ -67,7 +76,12 @@ fn test_example(command: &Command, example: &Example) -> Result<(), String> {
         example.name.to_string().blue()
     );
 
-    let target_path = PathBuf::from("examples-test");
+    let target_path = PathBuf::from(
+        command
+            .target_path
+            .clone()
+            .unwrap_or_else(|| "examples-test".to_string()),
+    );
     let component_name = ComponentName::new(example.name.as_string().to_string() + "-comp");
     let package_name =
         PackageName::from_string("golem:component").ok_or("failed to create package name")?;
