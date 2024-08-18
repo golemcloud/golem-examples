@@ -30,9 +30,10 @@ pub struct Command {
 
 pub fn main() {
     let command = Command::parse();
-    let filter = command.filter.as_ref().map(|filter| {
-        Regex::from_str(filter.as_str()).expect("failed to compile regex")
-    });
+    let filter = command
+        .filter
+        .as_ref()
+        .map(|filter| Regex::from_str(filter.as_str()).expect("failed to compile regex"));
     let results: Vec<(Example, Result<(), String>)> = GolemExamples::list_all_examples()
         .iter()
         .filter(|example| match &filter {
@@ -75,7 +76,12 @@ fn test_example(command: &Command, example: &Example) -> Result<(), String> {
         example.name.to_string().blue()
     );
 
-    let target_path = PathBuf::from(command.target_path.clone().unwrap_or_else(|| { "examples-test".to_string() }));
+    let target_path = PathBuf::from(
+        command
+            .target_path
+            .clone()
+            .unwrap_or_else(|| "examples-test".to_string()),
+    );
     let component_name = ComponentName::new(example.name.as_string().to_string() + "-comp");
     let package_name =
         PackageName::from_string("golem:component").ok_or("failed to create package name")?;
