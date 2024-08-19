@@ -244,9 +244,9 @@ dependencies = [
 
 [[package]]
 name = "golem-wit"
-version = "0.4.0"
+version = "1.0.0-rc1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1feaed707b1eaa126dc1f91da58f901e49ad05c6b6321c918060f803bccf5c9"
+checksum = "44357f9814854f8f672c77c63a1fce2b0258ad6f36115a3773a189976848635e"
 
 [[package]]
 name = "heck"
