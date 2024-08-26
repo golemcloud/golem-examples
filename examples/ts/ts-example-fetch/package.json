@@ -6,9 +6,9 @@
     "clean": "rm -rf out src/generated"
   },
   "devDependencies": {
-    "@golemcloud/componentize-js": "0.10.2-golem.1",
+    "@golemcloud/componentize-js": "0.10.5-golem.3",
     "@golemcloud/golem-ts": "0.2.0",
-    "@golemcloud/jco": "1.4.0-golem.1",
+    "@golemcloud/jco": "1.4.4-golem.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "rollup-plugin-typescript2": "^0.36.0",
     "@types/node": "^20.14.2",
