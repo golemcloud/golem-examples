@@ -84,7 +84,7 @@ fn test_example(command: &Command, example: &Example) -> Result<(), String> {
     );
     let component_name = ComponentName::new(example.name.as_string().to_string() + "-comp");
     let package_name =
-        PackageName::from_string("golem:component").ok_or("failed to create package name")?;
+        PackageName::from_string("golemx:componentx").ok_or("failed to create package name")?;
     let component_path = target_path.join(component_name.as_string());
 
     println!("Target path: {}", target_path.display().to_string().blue());
