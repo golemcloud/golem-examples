@@ -24,7 +24,7 @@ uint64_t exports_pack_name_api_get() {
 }
 
 
-void set_string(c_example_http_string_t* ret, const char* str) {
+void set_string(component_name_string_t* ret, const char* str) {
     ret->ptr = (uint8_t*)str;
     ret->len = strlen(str);
 }
@@ -36,13 +36,13 @@ void set_string_field(wasi_http_types_field_value_t* ret, const char* str) {
 
 #define log(...) { fprintf (stderr, __VA_ARGS__); fflush(stderr); }
 
-void exports_pack_name_api_send(c_example_http_string_t *ret) {
+void exports_pack_name_api_send(component_name_string_t *ret) {
     log("Setting up the outgoing request\n");
     // Setting up the outgoing request
     wasi_http_types_own_fields_t headers;
     wasi_http_types_header_error_t headers_err;
-    c_example_http_list_tuple2_field_key_field_value_t entries;
-    entries.ptr = malloc(2 * sizeof(c_example_http_tuple2_field_key_field_value_t));
+    component_name_list_tuple2_field_key_field_value_t entries;
+    entries.ptr = malloc(2 * sizeof(component_name_tuple2_field_key_field_value_t));
     entries.len = 2;
     set_string(&entries.ptr[0].f0, "Content-Type");
     set_string_field(&entries.ptr[0].f1, "application/json");
@@ -71,7 +71,7 @@ void exports_pack_name_api_send(c_example_http_string_t *ret) {
         return;
     }
 
-    c_example_http_string_t path;
+    component_name_string_t path;
     set_string(&path, "/post");
     if (!wasi_http_types_method_outgoing_request_set_path_with_query(
         wasi_http_types_borrow_outgoing_request(request),
@@ -93,7 +93,7 @@ void exports_pack_name_api_send(c_example_http_string_t *ret) {
         return;
     }
 
-    c_example_http_string_t authority;
+    component_name_string_t authority;
     set_string(&authority, "httpbin.org");
     if (!wasi_http_types_method_outgoing_request_set_authority(
         wasi_http_types_borrow_outgoing_request(request),
@@ -122,7 +122,7 @@ void exports_pack_name_api_send(c_example_http_string_t *ret) {
     log("Writing the outgoing request stream\n");
 
     wasi_io_streams_stream_error_t stream_err;
-    c_example_http_list_u8_t body_data;
+    component_name_list_u8_t body_data;
     body_data.ptr = malloc(256);
     sprintf((char*)body_data.ptr, "{ \"count\": %llu }", total);
     body_data.len = strlen((char*)body_data.ptr);
@@ -231,7 +231,7 @@ void exports_pack_name_api_send(c_example_http_string_t *ret) {
             pollable_list.ptr = malloc(sizeof(wasi_io_poll_borrow_pollable_t));
             pollable_list.ptr[0] = wasi_io_poll_borrow_pollable(pollable);
 
-            c_example_http_list_u32_t poll_result;
+            component_name_list_u32_t poll_result;
             wasi_io_poll_poll(&pollable_list, &poll_result);
             wasi_io_poll_pollable_drop_own(pollable);
         }
@@ -265,7 +265,7 @@ void exports_pack_name_api_send(c_example_http_string_t *ret) {
     uint64_t len = 0;
 
     while (!eof) {
-        c_example_http_list_u8_t chunk;
+        component_name_list_u8_t chunk;
         wasi_io_streams_stream_error_t stream_err;
         if (wasi_io_streams_method_input_stream_blocking_read(wasi_io_streams_borrow_input_stream(incoming_body_stream), 1024, &chunk, &stream_err)) {
             len += chunk.len;
