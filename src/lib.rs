@@ -29,7 +29,6 @@ impl Examples for GolemExamples {
             if let Some(lang_dir) = entry.as_dir() {
                 let lang_dir_name = lang_dir.path().file_name().unwrap().to_str().unwrap();
                 if let Some(lang) = GuestLanguage::from_string(lang_dir_name) {
-                    let instructions_path = lang_dir.path().join("INSTRUCTIONS");
                     let adapters_path =
                         Path::new(lang.tier().name()).join("wasi_snapshot_preview1.wasm");
 
@@ -42,7 +41,8 @@ impl Examples for GolemExamples {
                             {
                                 let example = parse_example(
                                     &lang,
-                                    &instructions_path,
+                                    lang_dir.path(),
+                                    Path::new("INSTRUCTIONS"),
                                     &adapters_path,
                                     example_dir.path(),
                                 );
@@ -81,17 +81,29 @@ impl Examples for GolemExamples {
                     .join(adapter_path.file_name().unwrap().to_str().unwrap()),
             )?;
         }
-        for wit_dep in &example.wit_deps {
-            copy_all(
-                &WIT,
-                wit_dep,
-                &parameters
+        let wit_deps_targets = {
+            match &example.wit_deps_targets {
+                Some(paths) => paths
+                    .iter()
+                    .map(|path| {
+                        parameters
+                            .target_path
+                            .join(parameters.component_name.as_string())
+                            .join(path)
+                    })
+                    .collect(),
+                None => vec![parameters
                     .target_path
                     .join(parameters.component_name.as_string())
                     .join("wit")
-                    .join("deps")
-                    .join(wit_dep.file_name().unwrap().to_str().unwrap()),
-            )?;
+                    .join("deps")],
+            }
+        };
+        for wit_dep in &example.wit_deps {
+            for target_wit_deps in &wit_deps_targets {
+                let target = target_wit_deps.join(wit_dep.file_name().unwrap().to_str().unwrap());
+                copy_all(&WIT, wit_dep, &target)?;
+            }
         }
         Ok(Self::instructions(example, parameters))
     }
@@ -205,6 +217,8 @@ fn transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> String {
         .replace("pack-name", &parameters.package_name.to_kebab_case())
         .replace("pack/name", &parameters.package_name.to_string_with_slash())
         .replace("PackName", &parameters.package_name.to_pascal_case())
+        .replace("pack-ns", &parameters.package_name.namespace())
+        .replace("PackNs", &parameters.package_name.namespace_title_case())
 }
 
 fn file_name_transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> String {
@@ -213,7 +227,8 @@ fn file_name_transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> 
 
 fn parse_example(
     lang: &GuestLanguage,
-    instructions_path: &Path,
+    lang_path: &Path,
+    default_instructions_file_name: &Path,
     adapters_path: &Path,
     example_root: &Path,
 ) -> Example {
@@ -223,6 +238,10 @@ fn parse_example(
         .contents();
     let metadata = serde_json::from_slice::<ExampleMetadata>(raw_metadata)
         .expect("Failed to parse metadata JSON");
+    let instructions_path = match metadata.instructions {
+        Some(instructions_file_name) => lang_path.join(instructions_file_name),
+        None => lang_path.join(default_instructions_file_name),
+    };
     let raw_instructions = EXAMPLES
         .get_file(instructions_path)
         .expect("Failed to read instructions")
@@ -261,6 +280,9 @@ fn parse_example(
             None
         },
         wit_deps,
+        wit_deps_targets: metadata
+            .wit_deps_paths
+            .map(|dirs| dirs.iter().map(PathBuf::from).collect()),
         exclude: metadata.exclude.iter().cloned().collect(),
     }
 }

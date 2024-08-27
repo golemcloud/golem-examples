@@ -257,6 +257,14 @@ impl PackageName {
     pub fn to_kebab_case(&self) -> String {
         format!("{}-{}", self.0 .0, self.0 .1)
     }
+
+    pub fn namespace(&self) -> String {
+        self.0 .0.to_string()
+    }
+
+    pub fn namespace_title_case(&self) -> String {
+        self.0 .0.to_title_case()
+    }
 }
 
 impl fmt::Display for PackageName {
@@ -303,6 +311,7 @@ pub struct Example {
     pub instructions: String,
     pub adapter: Option<PathBuf>,
     pub wit_deps: Vec<PathBuf>,
+    pub wit_deps_targets: Option<Vec<PathBuf>>,
     pub exclude: HashSet<String>,
 }
 
@@ -322,7 +331,10 @@ pub(crate) struct ExampleMetadata {
     pub requires_golem_host_wit: Option<bool>,
     #[serde(rename = "requiresWASI")]
     pub requires_wasi: Option<bool>,
+    #[serde(rename = "witDepsPaths")]
+    pub wit_deps_paths: Option<Vec<String>>,
     pub exclude: Vec<String>,
+    pub instructions: Option<String>,
 }
 
 #[cfg(test)]

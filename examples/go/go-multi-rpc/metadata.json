@@ -1,0 +1,17 @@
+{
+  "description": "Golem Go project with multiple components and worker-to-worker RPC calls, using magefile for managing the project",
+  "requiresAdapter": true,
+  "requiresGolemHostWIT": true,
+  "requiresWASI": true,
+  "witDepsPaths": [
+    "component-template/component/wit/deps",
+    "components/component-one/wit/deps",
+    "components/component-two/wit/deps",
+    "components/component-three/wit/deps"
+  ],
+  "exclude": [
+    "binding",
+    "target"
+  ],
+  "instructions": "INSTRUCTIONS-mage"
+}
