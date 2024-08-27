@@ -41,7 +41,7 @@ impl Examples for GolemExamples {
                             {
                                 let example = parse_example(
                                     &lang,
-                                    &lang_dir.path(),
+                                    lang_dir.path(),
                                     Path::new("INSTRUCTIONS"),
                                     &adapters_path,
                                     example_dir.path(),
@@ -282,7 +282,7 @@ fn parse_example(
         wit_deps,
         wit_deps_targets: metadata
             .wit_deps_paths
-            .map(|dirs| dirs.iter().map(|dir| PathBuf::from(dir)).collect()),
+            .map(|dirs| dirs.iter().map(PathBuf::from).collect()),
         exclude: metadata.exclude.iter().cloned().collect(),
     }
 }
