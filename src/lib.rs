@@ -1,6 +1,7 @@
 use crate::model::{Example, ExampleMetadata, ExampleName, ExampleParameters, GuestLanguage};
 use include_dir::{include_dir, Dir, DirEntry};
 use std::collections::HashSet;
+use std::convert::identity;
 use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -67,6 +68,7 @@ impl Examples for GolemExamples {
                 .join(parameters.component_name.as_string()),
             parameters,
             &example.exclude,
+            &example.transform_exclude,
             true,
         )?;
         if let Some(adapter_path) = &example.adapter {
@@ -119,6 +121,7 @@ fn instantiate_directory(
     target: &Path,
     parameters: &ExampleParameters,
     excludes: &HashSet<String>,
+    transform_excludes: &HashSet<String>,
     filter_metadata: bool,
 ) -> io::Result<()> {
     fs::create_dir_all(target)?;
@@ -138,11 +141,18 @@ fn instantiate_directory(
                         &target.join(&name),
                         parameters,
                         excludes,
+                        transform_excludes,
                         false,
                     )?;
                 }
                 DirEntry::File(file) => {
-                    instantiate_file(catalog, file.path(), &target.join(&name), parameters)?;
+                    instantiate_file(
+                        catalog,
+                        file.path(),
+                        &target.join(&name),
+                        parameters,
+                        transform_excludes.contains(&name),
+                    )?;
                 }
             }
         }
@@ -155,6 +165,7 @@ fn instantiate_file(
     source: &Path,
     target: &Path,
     parameters: &ExampleParameters,
+    transform_contents: bool,
 ) -> io::Result<()> {
     let raw_contents = catalog
         .get_file(source)
@@ -162,10 +173,13 @@ fn instantiate_file(
         .contents();
     let mut file = File::create(target)?;
 
-    if let Ok(contents) = String::from_utf8(raw_contents.to_vec()) {
-        let transformed = transform(contents, parameters);
+    let transformed_contents = transform_contents
+        .then(|| String::from_utf8(raw_contents.to_vec()).ok())
+        .and_then(identity)
+        .map(|contents| transform(contents, parameters));
 
-        file.write_all(transformed.as_bytes())?;
+    if let Some(transformed_contents) = transformed_contents {
+        file.write_all(transformed_contents.as_bytes())?;
     } else {
         file.write_all(raw_contents)?;
     }
@@ -284,5 +298,9 @@ fn parse_example(
             .wit_deps_paths
             .map(|dirs| dirs.iter().map(PathBuf::from).collect()),
         exclude: metadata.exclude.iter().cloned().collect(),
+        transform_exclude: metadata
+            .transform_exclude
+            .map(|te| te.iter().cloned().collect())
+            .unwrap_or_default(),
     }
 }
