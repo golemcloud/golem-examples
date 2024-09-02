@@ -1,0 +1,37 @@
+{
+  "type": "module",
+  "scripts": {
+    "fmt": "npx tsx build.ts fmt",
+    "lint": "npx tsx build.ts lint",
+    "fix": "npx tsx build.ts fix",
+    "build": "npx tsx build.ts build",
+    "updateRpcStubs": "npx tsx build.ts updateRpcStubs",
+    "generateNewComponent": "npx tsx build.ts generateNewComponent",
+    "deploy": "npx tsx build.ts deploy",
+    "deployComponent": "npx tsx build.ts deployComponent",
+    "test": "npx tsx build.ts test",
+    "clean": "npx tsx build.ts clean",
+    "help": "npx tsx build.ts"
+  },
+  "dependencies": {
+    "@golemcloud/golem-ts": "0.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "@golemcloud/componentize-js": "0.10.5-golem.3",
+    "@golemcloud/jco": "1.4.4-golem.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/node": "^20.14.2",
+    "@types/picomatch": "^3.0.1",
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.9.0",
+    "picomatch": "^4.0.2",
+    "prettier": "3.3.3",
+    "rollup": "^4.21.2",
+    "tslib": "^2.7.0",
+    "tsx": "^4.19.0",
+    "typescript-eslint": "^8.3.0"
+  }
+}

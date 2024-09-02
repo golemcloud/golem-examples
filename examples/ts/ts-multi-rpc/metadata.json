@@ -1,0 +1,21 @@
+{
+  "description": "Golem TypeScript project with multiple components and worker-to-worker RPC calls",
+  "requiresAdapter": false,
+  "requiresGolemHostWIT": true,
+  "requiresWASI": true,
+  "witDepsPaths": [
+    "component-template/component/wit/deps",
+    "src/components/component-one/wit/deps",
+    "src/components/component-two/wit/deps",
+    "src/components/component-three/wit/deps"
+  ],
+  "exclude": [
+    "generated",
+    "out"
+  ],
+  "transformExclude": [
+    "build.ts",
+    "integration.test.ts"
+  ],
+  "instructions": "INSTRUCTIONS-buildts"
+}

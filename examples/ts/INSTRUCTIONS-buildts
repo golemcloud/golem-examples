@@ -1,0 +1,15 @@
+See the documentation about installing tooling: https://learn.golem.cloud/docs/go-language-guide/setup
+and see more details in the README.md file about other commands.
+
+Before first time build, install dependencies and generate RPC stubs:
+  npm install
+  npm run updateRpcStubs
+
+Generate bindings, compile and compose components:
+  npm run build
+
+Deploy components to default profile:
+  npm run deploy
+
+Test the deployed components:
+  npm run test
