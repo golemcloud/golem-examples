@@ -31,7 +31,7 @@ The following fields are optional:
 - `requiresWASI` is a boolean, defaults to **false**. If true, the WASI Preview2 WIT interfaces which are compatible with Golem Cloud get copied into `wit/deps`.
 - `witDepsPaths` is an array of directory paths, defaults to **null**. When set, overrides the `wit/deps` directory for the above options and allows to use multiple target dirs for supporting multi-component examples.
 - `exclude` is a list of sub-paths and works as a simplified `.gitignore` file. It's primary purpose is to help the development loop of working on examples and in the future it will likely be dropped in favor of just using `.gitignore` files.
-- `transformExclude` is an optional list of file paths, defaults to **null**. Files in this list will not be transformed, only copied
+- `transformExclude` is an optional list of file names, defaults to **null**. Files with name in this list will not be transformed, only copied.
 - `instructions` is an optional filename, defaults to **null**. When set, overrides the __INSTRUCTIONS__ file used for the example, the file needs to be placed to same directory as the default instructions file.
 
 ### Template rules
