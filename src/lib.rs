@@ -151,7 +151,7 @@ fn instantiate_directory(
                         file.path(),
                         &target.join(&name),
                         parameters,
-                        transform_excludes.contains(&name),
+                        !transform_excludes.contains(&name),
                     )?;
                 }
             }
