@@ -2,10 +2,8 @@
 
 This repository contains all the *template examples* available for the `golem` CLI tool using via the `golem new` command.
 
-> [!CAUTION]
-> 
+> [!CAUTION] 
 > **While some template examples might work as they are, using them directly are not supported.**
-> 
 
 See the example templates section on the [Golem CLI page](https://www.golem.cloud/learn/golem-cli).
 
