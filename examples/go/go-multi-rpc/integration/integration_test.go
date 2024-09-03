@@ -11,13 +11,13 @@ import (
 )
 
 func TestDeployed(t *testing.T) {
-	componentOneURN := mustGetCompURNByCompName(t, "component-one")
+	componentOneURN := mustGetComponentURNByName(t, "component-one")
 	fmt.Printf("component-one: %s\n", componentOneURN)
 
-	componentTwoURN := mustGetCompURNByCompName(t, "component-two")
+	componentTwoURN := mustGetComponentURNByName(t, "component-two")
 	fmt.Printf("component-two: %s\n", componentTwoURN)
 
-	componentThreeURN := mustGetCompURNByCompName(t, "component-three")
+	componentThreeURN := mustGetComponentURNByName(t, "component-three")
 	fmt.Printf("component-three: %s\n", componentThreeURN)
 }
 
@@ -45,7 +45,7 @@ func TestCallingAddOnComponentOneCallsToOtherComponents(t *testing.T) {
 
 	// Invoke add on component-one
 	{
-		mustInvokeAndAwaitComponent(t, "component-one", workerName, "pack-ns:component-one/component-one-api.{add}", []string{"3"})
+		mustInvokeAndAwaitWorker(t, "component-one", workerName, fmt.Sprintf("%s:component-one/component-one-api.{add}", pkgNs), []string{"3"})
 	}
 
 	// Call get on all component and check the counters are accumulated on component two and three
@@ -57,7 +57,7 @@ func TestCallingAddOnComponentOneCallsToOtherComponents(t *testing.T) {
 
 	// Invoke add on component-two
 	{
-		mustInvokeAndAwaitComponent(t, "component-two", workerName, "pack-ns:component-two/component-two-api.{add}", []string{"2"})
+		mustInvokeAndAwaitWorker(t, "component-two", workerName, fmt.Sprintf("%s:component-two/component-two-api.{add}", pkgNs), []string{"2"})
 	}
 
 	// Call get on all component and check the counters are accumulated on component three
@@ -69,7 +69,7 @@ func TestCallingAddOnComponentOneCallsToOtherComponents(t *testing.T) {
 
 	// Invoke add on component-one again
 	{
-		mustInvokeAndAwaitComponent(t, "component-one", workerName, "pack-ns:component-one/component-one-api.{add}", []string{"1"})
+		mustInvokeAndAwaitWorker(t, "component-one", workerName, fmt.Sprintf("%s:component-one/component-one-api.{add}", pkgNs), []string{"1"})
 	}
 
 	// Call get on all component and check the counters are accumulated on component two and three
@@ -80,12 +80,12 @@ func TestCallingAddOnComponentOneCallsToOtherComponents(t *testing.T) {
 	}
 }
 
-func getCompURNByCompName(compName string) (string, error) {
+func getComponentURNByName(componentName string) (string, error) {
 	output, err := sh.Output(
-		"golem-cli", "--format", "json", "component", "get", "--component"+"-name", compName,
+		"golem-cli", "--format", "json", "component", "get", "--component-name", componentName,
 	)
 	if err != nil {
-		return "", fmt.Errorf("getCompURNByCompName for %s: golem-cli failed: %w\n", compName, err)
+		return "", fmt.Errorf("getComponentURNByName for %s: golem-cli failed: %w\n", componentName, err)
 	}
 
 	componentURN := gjson.Get(output, "componentUrn").String()
@@ -96,8 +96,8 @@ func getCompURNByCompName(compName string) (string, error) {
 	return componentURN, nil
 }
 
-func mustGetCompURNByCompName(t *testing.T, compName string) string {
-	name, err := getCompURNByCompName(compName)
+func mustGetComponentURNByName(t *testing.T, componentName string) string {
+	name, err := getComponentURNByName(componentName)
 	if err != nil {
 		t.Fatalf("%+v", err)
 	}
@@ -112,45 +112,45 @@ type ComponentURNs struct {
 
 func mustGetComponentURNs(t *testing.T) ComponentURNs {
 	return ComponentURNs{
-		ComponentOne:   mustGetCompURNByCompName(t, "component-one"),
-		ComponentTwo:   mustGetCompURNByCompName(t, "component-two"),
-		ComponentThree: mustGetCompURNByCompName(t, "component-three"),
+		ComponentOne:   mustGetComponentURNByName(t, "component-one"),
+		ComponentTwo:   mustGetComponentURNByName(t, "component-two"),
+		ComponentThree: mustGetComponentURNByName(t, "component-three"),
 	}
 }
 
-func addComponent(compName, workerName string, componentURNs ComponentURNs) error {
-	fmt.Printf("adding component: %s, %s\n", compName, workerName)
+func addComponent(componentName, workerName string, componentURNs ComponentURNs) error {
+	fmt.Printf("adding component: %s, %s\n", componentName, workerName)
 	output, err := sh.Output(
 		"golem-cli", "worker",
 		"--format", "json",
 		"add",
-		"--component"+"-name", compName,
+		"--component-name", componentName,
 		"--worker-name", workerName,
 		"--env", fmt.Sprintf("COMPONENT_ONE_ID=%s", componentIDFromURN(componentURNs.ComponentOne)),
 		"--env", fmt.Sprintf("COMPONENT_TWO_ID=%s", componentIDFromURN(componentURNs.ComponentTwo)),
 		"--env", fmt.Sprintf("COMPONENT_THREE_ID=%s", componentIDFromURN(componentURNs.ComponentThree)),
 	)
 	if err != nil {
-		return fmt.Errorf("addComponent for %s, %s: golem-cli failed: %w\n%s", compName, workerName, err, output)
+		return fmt.Errorf("addComponent for %s, %s: golem-cli failed: %w\n%s", componentName, workerName, err, output)
 	}
 	return nil
 }
 
-func mustAddComponent(t *testing.T, compName, workerName string, componentURNs ComponentURNs) {
-	err := addComponent(compName, workerName, componentURNs)
+func mustAddComponent(t *testing.T, componentName, workerName string, componentURNs ComponentURNs) {
+	err := addComponent(componentName, workerName, componentURNs)
 	if err != nil {
 		t.Fatalf("%+v", err)
 	}
 }
 
-func invokeAndAwaitComponent(compName, workerName, function string, functionArgs []string) (string, error) {
-	fmt.Printf("invoking component: %s, %s, %s, %+v\n", compName, workerName, function, functionArgs)
+func invokeAndAwaitWorker(componentName, workerName, function string, functionArgs []string) (string, error) {
+	fmt.Printf("invoking component: %s, %s, %s, %+v\n", componentName, workerName, function, functionArgs)
 
 	cliArgs := []string{
 		"--format", "json",
 		"worker",
 		"invoke-and-await",
-		"--component" + "-name", compName,
+		"--component" + "-name", componentName,
 		"--worker-name", workerName,
 		"--function", function,
 	}
@@ -161,7 +161,7 @@ func invokeAndAwaitComponent(compName, workerName, function string, functionArgs
 
 	output, err := sh.Output("golem-cli", cliArgs...)
 	if err != nil {
-		return "", fmt.Errorf("invokeAndAwaitComponent failed: %w", err)
+		return "", fmt.Errorf("invokeAndAwaitWorker failed: %w", err)
 	}
 
 	fmt.Println(output)
@@ -169,8 +169,8 @@ func invokeAndAwaitComponent(compName, workerName, function string, functionArgs
 	return output, nil
 }
 
-func mustInvokeAndAwaitComponent(t *testing.T, componentURN, workerName, function string, functionArgs []string) string {
-	output, err := invokeAndAwaitComponent(componentURN, workerName, function, functionArgs)
+func mustInvokeAndAwaitWorker(t *testing.T, componentURN, workerName, function string, functionArgs []string) string {
+	output, err := invokeAndAwaitWorker(componentURN, workerName, function, functionArgs)
 	if err != nil {
 		t.Fatalf("%+v", err)
 	}
@@ -181,21 +181,21 @@ func componentIDFromURN(urn string) string {
 	return strings.Split(urn, ":")[2]
 }
 
-func expectCounter(t *testing.T, compName, workerName string, expected int64) {
-	output := mustInvokeAndAwaitComponent(t, compName, workerName, fmt.Sprintf("pack-ns:%s/%s-api.{get}", compName, compName), nil)
+func expectCounter(t *testing.T, componentName, workerName string, expected int64) {
+	output := mustInvokeAndAwaitWorker(t, componentName, workerName, fmt.Sprintf("%s:%s/%s-api.{get}", pkgNs, componentName, componentName), nil)
 
 	actualValue := gjson.Get(output, "value")
 	if !actualValue.Exists() {
-		t.Fatalf("Expected counter for %s, %s: %d, actual value is missing", compName, workerName, expected)
+		t.Fatalf("Expected counter for %s, %s: %d, actual value is missing", componentName, workerName, expected)
 	}
 
 	actualArray := actualValue.Array()
 	if len(actualArray) != 1 {
-		t.Fatalf("Expected counter for %s, %s: %d, actual value tuple has bad number of elements: %s", compName, workerName, expected, actualValue)
+		t.Fatalf("Expected counter for %s, %s: %d, actual value tuple has bad number of elements: %s", componentName, workerName, expected, actualValue)
 	}
 
 	actual := actualArray[0].Int()
 	if expected != actual {
-		t.Fatalf("Expected counter for %s, %s: %d, actual: %d", compName, workerName, expected, actual)
+		t.Fatalf("Expected counter for %s, %s: %d, actual: %d", componentName, workerName, expected, actual)
 	}
 }
