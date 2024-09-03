@@ -101,7 +101,7 @@ Under the hood the _magefile_ commands below (and for build) use generic `golem-
 
 ### Magefile commands and required manual steps
 
-The dependencies between components are defined in  the [/magefiles/magefile.go](/magefiles/magefile.go) build script:
+The dependencies between components are defined in  the [/magefiles/config.go](/magefiles/config.go) build script:
 
 ```go
 // componentDeps defines the Worker to Worker RPC dependencies

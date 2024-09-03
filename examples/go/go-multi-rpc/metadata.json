@@ -13,5 +13,10 @@
     "binding",
     "target"
   ],
+  "transformExclude": [
+    "generator.go",
+    "integration_test.go",
+    "magefile.go"
+  ],
   "instructions": "INSTRUCTIONS-mage"
 }

@@ -1,0 +1,23 @@
+package pack-ns:component-two-stub;
+
+interface stub-component-two {
+  use golem:rpc/types@0.1.0.{uri as golem-rpc-uri};
+  use wasi:io/poll@0.2.0.{pollable as wasi-io-pollable};
+
+  resource future-get-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<u64>;
+  }
+  resource component-two-api {
+    constructor(location: golem-rpc-uri);
+    blocking-add: func(value: u64);
+    add: func(value: u64);
+    blocking-get: func() -> u64;
+    get: func() -> future-get-result;
+  }
+
+}
+
+world wasm-rpc-stub-component-two {
+  export stub-component-two;
+}

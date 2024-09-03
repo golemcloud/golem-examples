@@ -313,6 +313,7 @@ pub struct Example {
     pub wit_deps: Vec<PathBuf>,
     pub wit_deps_targets: Option<Vec<PathBuf>>,
     pub exclude: HashSet<String>,
+    pub transform_exclude: HashSet<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -335,6 +336,8 @@ pub(crate) struct ExampleMetadata {
     pub wit_deps_paths: Option<Vec<String>>,
     pub exclude: Vec<String>,
     pub instructions: Option<String>,
+    #[serde(rename = "transformExclude")]
+    pub transform_exclude: Option<Vec<String>>,
 }
 
 #[cfg(test)]
