@@ -156,7 +156,7 @@ interface component-one-api {
 
 world component-one {
   // Golem dependencies
-  import golem:api/host@0.2.0;
+  import golem:api/host@1.1.0;
   import golem:rpc/types@0.1.0;
 
   // WASI dependencies

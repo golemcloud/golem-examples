@@ -2,7 +2,7 @@ import { ComponentOneApi } from "./generated/component-one";
 import { ComponentTwoApi } from "pack-ns:component-two-stub/stub-component-two";
 import { ComponentThreeApi } from "pack-ns:component-three-stub/stub-component-three";
 import * as cfg from "../../lib/cfg";
-import { getSelfMetadata } from "golem:api/host@0.2.0";
+import { getSelfMetadata } from "golem:api/host@1.1.0";
 
 let state = BigInt(0);
 
