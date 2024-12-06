@@ -8,6 +8,6 @@ interface api {
 }
 
 world component-name  {
-  import golem:api/host@0.2.0;
+  import golem:api/host@1.1.0;
   export api;
 }

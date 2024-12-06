@@ -1,5 +1,5 @@
-github.com/golemcloud/golem-go v0.7.0 h1:8zpNeAtEDJsJllqHUmjji/lyplSJ0kI3v7vN97/N8zs=
-github.com/golemcloud/golem-go v0.7.0/go.mod h1:VLL22qVo5R2+jGLO43tLPpPjf2WrA6B7GQoqXKnSODo=
+github.com/golemcloud/golem-go v1.1.0 h1:By+OBuRu4c3WTuf2OKh71yY7rgOyLXzUgr7Y+98BjGk=
+github.com/golemcloud/golem-go v1.1.0/go.mod h1:VLL22qVo5R2+jGLO43tLPpPjf2WrA6B7GQoqXKnSODo=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/magefile/mage v1.15.0 h1:BvGheCMAsG3bWUDbZ8AyXXpCNwU9u5CB6sM+HNb9HYg=
