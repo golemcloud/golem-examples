@@ -1,16 +1,18 @@
-package pack:name;
+package pack-ns:component-three;
 
 // See https://component-model.bytecodealliance.org/design/wit.html for more details about the WIT syntax
 
-interface api {
+interface component-three-api {
   add: func(value: u64);
   get: func() -> u64;
 }
 
-world component-name  {
+world component-three  {
+  // Golem dependencies
   import golem:api/host@1.1.0;
   import golem:rpc/types@0.1.0;
 
+  // WASI dependencies
   import wasi:blobstore/blobstore;
   import wasi:blobstore/container;
   import wasi:cli/environment@0.2.0;
@@ -23,8 +25,6 @@ world component-name  {
   import wasi:io/error@0.2.0;
   import wasi:io/poll@0.2.0;
   import wasi:io/streams@0.2.0;
-  import wasi:keyvalue/eventual-batch@0.1.0;
-  import wasi:keyvalue/eventual@0.1.0;
   import wasi:logging/logging;
   import wasi:random/random@0.2.0;
   import wasi:random/insecure@0.2.0;
@@ -32,5 +32,8 @@ world component-name  {
   import wasi:sockets/ip-name-lookup@0.2.0;
   import wasi:sockets/instance-network@0.2.0;
 
-  export api;
+  // Project Component dependencies
+  // import pack-ns:name-stub/stub-name;
+
+  export component-three-api;
 }

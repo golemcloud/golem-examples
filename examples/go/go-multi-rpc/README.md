@@ -44,7 +44,7 @@ In the example 3 simple counter components are defined, which can be familiar fr
  - **component one** delegates the add call to **component two** and **three** too,
  - and **component two** delegates to **component three**.
 
-In both cases the _current worker name_ will be used as _target worker name_ too. 
+In both cases the _current worker name_ will be used as _target worker name_ too.
 
 Apart from _worker name_, remote calls also require the **target components' deployed ID**. For this the example uses environment variables, and uses the `lib/cfg` subpackage (which is shared between the components) to extract it.
 
@@ -92,7 +92,7 @@ After adding a new component the `build` command will also include it.
 
 ## Using Worker to Worker RPC calls
 
-### Under the hood 
+### Under the hood
 
 Under the hood the _magefile_ commands below (and for build) use generic `golem-cli stubgen` subcommands:
  - `golem-cli stubgen build` for creating remote call _stub WIT_ definitions and _WASM components_ for the stubs
@@ -142,7 +142,7 @@ interface component-one-api {
 
 world component-one {
   // Golem dependencies
-  import golem:api/host@0.2.0;
+  import golem:api/host@1.1.0;
   import golem:rpc/types@0.1.0;
 
   // WASI dependencies
@@ -176,7 +176,7 @@ import (
 
 func (i *Impl) Add(value uint64) {
     std.Init(std.Packages{Os: true, NetHttp: true})
-    
+
     componentTwo := binding.NewComponentTwoApi(binding.GolemRpc0_1_0_TypesUri{Value: "uri"})
     defer componentTwo.Drop()
     componentTwo.BlockingAdd(value)
