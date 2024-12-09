@@ -3,9 +3,11 @@
   "requiresAdapter": false,
   "requiresGolemHostWIT": true,
   "requiresWASI": true,
+  "instructions": "INSTRUCTIONS-app",
   "exclude": [
     "component_name.wasm",
     "bindings",
+    "wit-generated  ",
     "__pycache__"
   ]
 }

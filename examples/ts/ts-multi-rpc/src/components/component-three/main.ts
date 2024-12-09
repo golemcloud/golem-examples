@@ -1,4 +1,4 @@
-import { ComponentThreeApi } from "./generated/component-three";
+import { ComponentThreeApi } from "./binding/component-three";
 
 let state = BigInt(0);
 

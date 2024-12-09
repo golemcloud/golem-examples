@@ -1,9 +1,4 @@
 {
-  "scripts": {
-    "build": "rollup --config",
-    "componentize": "npm run build && jco componentize -w wit -o out/component_name.wasm out/main.js",
-    "clean": "rm -rf out src/generated"
-  },
   "devDependencies": {
     "@golemcloud/componentize-js": "0.10.5-golem.3",
     "@golemcloud/golem-ts": "1.1.0",

@@ -31,6 +31,19 @@ export const cmdArg = Command.cmdArgs;
 
 export type Commands = { [key: string]: Command };
 
+export function getComponentNameFromArgs(args: string[]) {
+  if (args.length != 1) {
+    throw new Error(`generateNewComponents expected exactly one argument (component-name), got: [${args.join(", ")}]`);
+  }
+
+  const componentName = args[0];
+  if (componentName === undefined) {
+    throw new Error("Undefined component name");
+  }
+
+  return componentName;
+}
+
 export async function main(commands: Commands) {
   const args = process.argv.splice(2);
 
@@ -59,94 +72,6 @@ export async function main(commands: Commands) {
       );
     }
   }
-}
-
-export interface Task {
-  runMessage: string;
-  skipMessage: string;
-  targets: string[];
-  sources: string[];
-  run: () => Promise<void>;
-}
-
-export async function runTask(task: Task) {
-  let run = task.targets.length == 0;
-
-  upToDateCheck: for (const target of task.targets) {
-    let targetInfo;
-    try {
-      targetInfo = fs.statSync(target);
-    } catch (error) {
-      if (error instanceof Error && "code" in error && error.code == "ENOENT") {
-        run = true;
-        break;
-      }
-      throw error;
-    }
-
-    let targetModifiedMs = Number.MAX_SAFE_INTEGER;
-
-    if (targetInfo.isDirectory()) {
-      const targets = fs.readdirSync(target, {
-        recursive: true,
-        withFileTypes: true,
-      });
-      for (const target of targets) {
-        if (target.isDirectory()) continue;
-        const targetInfo = fs.statSync(path.join(target.parentPath, target.name));
-        if (targetModifiedMs > targetInfo.mtimeMs) {
-          targetModifiedMs = targetInfo.mtimeMs;
-        }
-      }
-    } else {
-      targetModifiedMs = targetInfo.mtimeMs;
-    }
-
-    for (const source of task.sources) {
-      const sourceInfo = fs.statSync(source);
-
-      if (!sourceInfo.isDirectory()) {
-        if (sourceInfo.mtimeMs > targetModifiedMs) {
-          run = true;
-          break upToDateCheck;
-        }
-        continue;
-      }
-
-      const sources = fs.readdirSync(source, {
-        recursive: true,
-        withFileTypes: true,
-      });
-      for (const source of sources) {
-        if (source.isDirectory()) continue;
-        const sourceInfo = fs.statSync(path.join(source.parentPath, source.name));
-        if (sourceInfo.mtimeMs > targetModifiedMs) {
-          run = true;
-          break upToDateCheck;
-        }
-      }
-    }
-  }
-
-  if (!run) {
-    console.log(`${task.targets.join(",")} is up to date, skipping ${task.skipMessage}`);
-    return;
-  }
-
-  console.log(task.runMessage);
-  await task.run();
-}
-
-export type Dependencies = { [key: string]: string[] };
-
-export function allDepsSorted(dependencies: Dependencies): string[] {
-  const allDepsSet = new Set<string>();
-  for (const deps of Object.values(dependencies).values()) {
-    for (const dep of deps) {
-      allDepsSet.add(dep);
-    }
-  }
-  return Array.from(allDepsSet).sort();
 }
 
 interface FsMatchOptions {

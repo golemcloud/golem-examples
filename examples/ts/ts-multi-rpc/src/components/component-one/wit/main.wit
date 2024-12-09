@@ -10,7 +10,6 @@ interface component-one-api {
 world component-one  {
   // Golem dependencies
   import golem:api/host@0.2.0;
-  import golem:rpc/types@0.1.0;
 
   // WASI dependencies
   import wasi:blobstore/blobstore;
@@ -31,10 +30,6 @@ world component-one  {
   import wasi:random/insecure-seed@0.2.0;
   import wasi:sockets/ip-name-lookup@0.2.0;
   import wasi:sockets/instance-network@0.2.0;
-
-  // Project Component dependencies
-  import pack-ns:component-two-stub/stub-component-two;
-  import pack-ns:component-three-stub/stub-component-three;
 
   export component-one-api;
 }

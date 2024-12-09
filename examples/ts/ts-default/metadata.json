@@ -3,6 +3,7 @@
   "requiresAdapter": false,
   "requiresGolemHostWIT": true,
   "requiresWASI": true,
+  "instructions": "INSTRUCTIONS-ap",
   "exclude": [
     "node_modules",
     "out",

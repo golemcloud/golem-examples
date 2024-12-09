@@ -1,4 +1,4 @@
-import { ComponentTwoApi } from "./generated/component-two";
+import { ComponentTwoApi } from "./binding/component-two";
 import { ComponentThreeApi } from "pack-ns:component-three-stub/stub-component-three";
 import * as cfg from "../../lib/cfg";
 import { getSelfMetadata } from "golem:api/host@0.2.0";

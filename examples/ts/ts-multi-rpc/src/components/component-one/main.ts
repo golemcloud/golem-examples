@@ -1,4 +1,4 @@
-import { ComponentOneApi } from "./generated/component-one";
+import { ComponentOneApi } from "./binding/component-one";
 import { ComponentTwoApi } from "pack-ns:component-two-stub/stub-component-two";
 import { ComponentThreeApi } from "pack-ns:component-three-stub/stub-component-three";
 import * as cfg from "../../lib/cfg";
