@@ -3,5 +3,6 @@
   "requiresAdapter": false,
   "requiresGolemHostWIT": false,
   "requiresWASI": false,
-  "exclude": ["target"]
+  "instructions": "INSTRUCTIONS-app",
+  "exclude": ["target", "src/binding"]
 }
