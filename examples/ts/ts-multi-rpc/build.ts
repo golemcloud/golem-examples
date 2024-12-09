@@ -138,7 +138,7 @@ async function generateNewComponents(args: string[]) {
             let template = fs.readFileSync(sourcePath).toString();
             template = template.replaceAll("pck-ns", cfg.pckNs);
             template = template.replaceAll("comp-name", componentName);
-            template = template.replaceAll("componentName", componentNameCamel);
+            template = template.replaceAll("compName", componentNameCamel);
             template = template.replaceAll("CompName", componentNamePascal);
 
             fs.writeFileSync(targetPath, new Uint8Array(Buffer.from(template)));

@@ -1,7 +1,7 @@
 # Schema for IDEA:
-# $schema: https://schema.golem.cloud/app/golem/1.1.0-rc3/golem.schema.json
+# $schema: https://schema.golem.cloud/app/golem/1.1.0/golem.schema.json
 # Schema for vscode-yaml
-# yaml-language-server: $schema=https://schema.golem.cloud/app/golem/1.1.0-rc3/golem.schema.json
+# yaml-language-server: $schema=https://schema.golem.cloud/app/golem/1.1.0/golem.schema.json
 
 tempDir: out/golem-temp
 components:
@@ -11,11 +11,11 @@ components:
     componentWasm: out/components/component_name.wasm
     linkedWasm: out/linked-components/component_name_linked.wasm
     build:
-    - command: npx jco stubgen wit-generated -o src/generated
+    - command: npx jco stubgen wit-generated -o src/binding
       sources:
       - wit-generated
       targets:
-      - src/generated
+      - src/binding
     - command: npx rollup --config
       sources:
       - src
@@ -30,7 +30,8 @@ components:
       targets:
       - out/components/component_name.wasm
     clean:
-    - src/generated
+    - src/binding
+    - wit-generated
     customCommands:
       install:
       - command: npm install

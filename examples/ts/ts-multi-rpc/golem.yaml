@@ -1,7 +1,7 @@
 # Schema for IDEA:
-# $schema: https://schema.golem.cloud/app/golem/1.1.0-rc3/golem.schema.json
+# $schema: https://schema.golem.cloud/app/golem/1.1.0/golem.schema.json
 # Schema for vscode-yaml
-# yaml-language-server: $schema=https://schema.golem.cloud/app/golem/1.1.0-rc3/golem.schema.json
+# yaml-language-server: $schema=https://schema.golem.cloud/app/golem/1.1.0/golem.schema.json
 
 tempDir: out/golem-temp
 includes:
@@ -36,7 +36,8 @@ templates:
       targets:
       - out/components/{{ componentName }}.wasm
     clean:
-    - src/generated
+    - binding
+    - wit-generated
     customCommands:
       install:
       - command: npm install

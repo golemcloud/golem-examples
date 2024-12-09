@@ -8,13 +8,8 @@ interface comp-name-api {
 }
 
 world comp-name  {
-<<<<<<< HEAD
-=======
-  // Golem dependencies
   import golem:api/host@1.1.0;
-  import golem:rpc/types@0.1.0;
 
->>>>>>> main
   // WASI dependencies
   import wasi:blobstore/blobstore;
   import wasi:blobstore/container;

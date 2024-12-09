@@ -33,7 +33,7 @@ export type Commands = { [key: string]: Command };
 
 export function getComponentNameFromArgs(args: string[]) {
   if (args.length != 1) {
-    throw new Error(`generateNewComponents expected exactly one argument (component-name), got: [${args.join(", ")}]`);
+    throw new Error(`expected exactly one argument (component-name), got: [${args.join(", ")}]`);
   }
 
   const componentName = args[0];

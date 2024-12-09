@@ -4,6 +4,7 @@
     "fmt": "npx tsx build.ts fmt",
     "lint": "npx tsx build.ts lint",
     "fix": "npx tsx build.ts fix",
+    "generateNewComponent": "npx tsx build.ts generateNewComponent",
     "rollupComponent": "npx tsx build.ts rollupComponent",
     "deploy": "npx tsx build.ts deploy",
     "deployComponent": "npx tsx build.ts deployComponent",

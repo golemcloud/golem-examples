@@ -1,4 +1,4 @@
-import {CompNameApi} from "./generated/comp-name";
+import {CompNameApi} from "./binding/comp-name";
 
 let state = BigInt(0);
 
