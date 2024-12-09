@@ -3,9 +3,10 @@
   "requiresAdapter": false,
   "requiresGolemHostWIT": true,
   "requiresWASI": true,
+  "instructions": "INSTRUCTIONS-app",
   "exclude": [
     "node_modules",
     "out",
-    "src/generated"
+    "src/binding"
   ]
 }

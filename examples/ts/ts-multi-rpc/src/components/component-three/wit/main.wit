@@ -9,8 +9,7 @@ interface component-three-api {
 
 world component-three  {
   // Golem dependencies
-  import golem:api/host@1.1.0;
-  import golem:rpc/types@0.1.0;
+  import golem:api/host@0.2.0;
 
   // WASI dependencies
   import wasi:blobstore/blobstore;
@@ -31,9 +30,6 @@ world component-three  {
   import wasi:random/insecure-seed@0.2.0;
   import wasi:sockets/ip-name-lookup@0.2.0;
   import wasi:sockets/instance-network@0.2.0;
-
-  // Project Component dependencies
-  // import pack-ns:name-stub/stub-name;
 
   export component-three-api;
 }

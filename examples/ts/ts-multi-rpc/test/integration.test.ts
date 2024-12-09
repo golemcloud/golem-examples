@@ -156,7 +156,7 @@ async function invokeWorkerGet(componentName: string, workerName: string) {
   const result = await invokeAndAwaitWorker(
     componentName,
     workerName,
-    `${buildCfg.pckNs}:${componentName}/${componentName}-api.{get}`,
+    `${buildCfg.pckNs}:${componentName}-interface/${componentName}-api.{get}`,
     [],
   );
   return result["value"][0] as number;
@@ -166,7 +166,7 @@ async function invokeWorkerAdd(componentName: string, workerName: string, value:
   await invokeAndAwaitWorker(
     componentName,
     workerName,
-    `${buildCfg.pckNs}:${componentName}/${componentName}-api.{add}`,
+    `${buildCfg.pckNs}:${componentName}-interface/${componentName}-api.{add}`,
     [value.toString()],
   );
 }

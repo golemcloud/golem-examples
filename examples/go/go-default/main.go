@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/golemcloud/golem-go/std"
 
-	"pack/name/component_name"
+	"pack/name/binding"
 )
 
 type RequestBody struct {
@@ -15,7 +15,7 @@ type ResponseBody struct {
 }
 
 func init() {
-	component_name.SetExportsPackNameApi(&ComponentNameImpl{})
+	binding.SetExportsPackNameInterfaceApi(&ComponentNameImpl{})
 }
 
 // total State can be stored in global variables

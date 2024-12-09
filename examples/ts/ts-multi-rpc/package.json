@@ -4,13 +4,11 @@
     "fmt": "npx tsx build.ts fmt",
     "lint": "npx tsx build.ts lint",
     "fix": "npx tsx build.ts fix",
-    "build": "npx tsx build.ts build",
-    "updateRpcStubs": "npx tsx build.ts updateRpcStubs",
     "generateNewComponent": "npx tsx build.ts generateNewComponent",
+    "rollupComponent": "npx tsx build.ts rollupComponent",
     "deploy": "npx tsx build.ts deploy",
     "deployComponent": "npx tsx build.ts deployComponent",
     "test": "npx tsx build.ts test",
-    "clean": "npx tsx build.ts clean",
     "help": "npx tsx build.ts"
   },
   "dependencies": {
@@ -29,7 +27,7 @@
     "globals": "^15.9.0",
     "picomatch": "^4.0.2",
     "prettier": "3.3.3",
-    "rollup": "^4.21.2",
+    "rollup": "^4.28.1",
     "tslib": "^2.7.0",
     "tsx": "^4.19.0",
     "typescript-eslint": "^8.3.0"

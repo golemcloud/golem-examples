@@ -1,4 +1,4 @@
-import { Api } from './generated/component-name.js';
+import { Api } from './binding/component-name.js';
 
 let state = BigInt(0);
 

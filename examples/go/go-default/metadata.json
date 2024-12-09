@@ -3,8 +3,10 @@
   "requiresAdapter": true,
   "requiresGolemHostWIT": true,
   "requiresWASI": true,
+  "instructions": "INSTRUCTIONS-app",
   "exclude": [
-    "component_name",
+    "wit-generated",
+    "build",
     "main.wasm"
   ]
 }

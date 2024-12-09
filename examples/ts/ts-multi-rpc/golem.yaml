@@ -1,0 +1,43 @@
+# Schema for IDEA:
+# $schema: https://schema.golem.cloud/app/golem/1.1.0/golem.schema.json
+# Schema for vscode-yaml
+# yaml-language-server: $schema=https://schema.golem.cloud/app/golem/1.1.0/golem.schema.json
+
+tempDir: out/golem-temp
+includes:
+- src/components/*/golem.yaml
+witDeps:
+- wit-deps
+templates:
+  ts:
+    sourceWit: wit
+    generatedWit: wit-generated
+    componentWasm: ../../../out/components/{{ componentName }}.wasm
+    linkedWasm: ../../../out/linked-components/{{ componentName }}-linked.wasm
+    build:
+    - command: npx jco stubgen src/components/{{ componentName }}/wit-generated -o src/components/{{ componentName }}/binding
+      dir: ../../..
+      sources:
+      - src/components/{{ componentName }}/wit-generated
+      targets:
+      - src/components/{{ componentName }}/binding
+    - command: npx tsx build.ts rollupComponent {{ componentName }}
+      dir: ../../..
+      sources:
+      - src/components/{{ componentName }}
+      targets:
+      - out/build/{{ componentName }}/main.js
+    - command: npx jco componentize -w src/components/{{ componentName }}/wit-generated -o out/components/{{ componentName }}.wasm out/build/{{ componentName }}/main.js
+      dir: ../../..
+      mkdirs:
+      - out/components/{{ componentName }}
+      sources:
+      - out/build/{{ componentName }}/main.js
+      targets:
+      - out/components/{{ componentName }}.wasm
+    clean:
+    - binding
+    - wit-generated
+    customCommands:
+      install:
+      - command: npm install

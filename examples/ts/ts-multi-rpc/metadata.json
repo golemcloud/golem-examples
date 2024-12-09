@@ -4,18 +4,19 @@
   "requiresGolemHostWIT": true,
   "requiresWASI": true,
   "witDepsPaths": [
-    "component-template/component/wit/deps",
-    "src/components/component-one/wit/deps",
-    "src/components/component-two/wit/deps",
-    "src/components/component-three/wit/deps"
+    "wit-deps"
   ],
   "exclude": [
+    "binding",
     "generated",
+    "wit-generated",
     "out"
   ],
   "transformExclude": [
     "build.ts",
-    "integration.test.ts"
+    "build-tools.ts",
+    "integration.test.ts",
+    "golem.yaml"
   ],
   "instructions": "INSTRUCTIONS-buildts"
 }
