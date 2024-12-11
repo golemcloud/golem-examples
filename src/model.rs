@@ -1,4 +1,3 @@
-use derive_more::FromStr;
 use fancy_regex::{Match, Regex};
 use inflector::Inflector;
 use once_cell::sync::Lazy;
@@ -11,7 +10,9 @@ use std::str::FromStr;
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, FromStr, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, derive_more::FromStr, Serialize, Deserialize,
+)]
 pub struct ComponentName(String);
 
 static COMPONENT_NAME_SPLIT_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new("(?=[A-Z\\-_])").unwrap());
@@ -283,7 +284,9 @@ impl FromStr for PackageName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, FromStr, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, derive_more::FromStr, Serialize, Deserialize,
+)]
 pub struct ExampleName(String);
 
 impl ExampleName {
