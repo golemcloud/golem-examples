@@ -36,4 +36,4 @@ To run the console app at the project root, do `cargo run -p app`.  Again, we wi
 
 Now that we have tests and the console app to guide the implementation, we should have a very good idea of how our APIs will look like.  Thereby, we shall express our APIs in the `wit` file.  Next, we will add some boilerplate code in the `wasm` module to glue the Rust bindings to our Wasm implementation. Please refer to the code in `wasm\lib.rs` as well as Golem's documentation.  The implementation in the Wasm module should be fairly trivial and quite similar to that of the console app.
 
-To build the Wasm assembly, run `cargo component build --release -p wasm` at the root of our project directory.  This will produce the `target/wasm32-wasi/release/lib.wasm` file in this case.
+To build the Wasm assembly, run `cargo component build --release -p wasm` at the root of our project directory.  This will produce the `target/wasm32-wasip1/release/lib.wasm` file in this case.

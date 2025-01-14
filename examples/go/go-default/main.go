@@ -15,7 +15,7 @@ type ResponseBody struct {
 }
 
 func init() {
-	binding.SetExportsPackNameInterfaceApi(&ComponentNameImpl{})
+	binding.SetExportsPackNameExportsApi(&ComponentNameImpl{})
 }
 
 // total State can be stored in global variables

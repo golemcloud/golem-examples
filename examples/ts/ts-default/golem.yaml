@@ -12,6 +12,10 @@ components:
     linkedWasm: out/linked-components/component_name_linked.wasm
     build:
     - command: npx jco stubgen wit-generated -o src/binding
+      rmdirs:
+      - src/binding
+      mkdirs:
+      - src/binding
       sources:
       - wit-generated
       targets:
