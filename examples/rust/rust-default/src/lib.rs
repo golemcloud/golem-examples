@@ -1,6 +1,6 @@
 mod bindings;
 
-use crate::bindings::exports::golemx::componentx_interface::api::*;
+use crate::bindings::exports::pack::name_exports::api::*;
 use std::cell::RefCell;
 
 /// This is one of any number of data types that our application

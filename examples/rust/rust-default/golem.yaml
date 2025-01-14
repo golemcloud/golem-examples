@@ -14,10 +14,10 @@ components:
           - src
           - wit
           targets:
-          - target/wasm32-wasi/debug/component_name.wasm
+          - target/wasm32-wasip1/debug/component_name.wasm
         sourceWit: wit
         generatedWit: wit-generated
-        componentWasm: target/wasm32-wasi/debug/component_name.wasm
+        componentWasm: target/wasm32-wasip1/debug/component_name.wasm
         linkedWasm: target/golem-components/debug/component_name.wasm
         clean:
         - src/bindings.rs
@@ -28,10 +28,10 @@ components:
           - src
           - wit
           targets:
-          - target/wasm32-wasi/release/component_name.wasm
+          - target/wasm32-wasip1/release/component_name.wasm
         sourceWit: wit
         generatedWit: wit-generated
-        componentWasm: target/wasm32-wasi/release/component_name.wasm
+        componentWasm: target/wasm32-wasip1/release/component_name.wasm
         linkedWasm: target/golem-components/release/component_name.wasm
         clean:
         - src/bindings.rs

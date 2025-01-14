@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "@golemcloud/componentize-js": "0.10.5-golem.3",
-    "@golemcloud/golem-ts": "1.1.0",
+    "@golemcloud/golem-ts": "1.1.1",
     "@golemcloud/jco": "1.4.4-golem.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "rollup-plugin-typescript2": "^0.36.0",
