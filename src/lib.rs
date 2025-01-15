@@ -1,9 +1,11 @@
-use crate::model::{Example, ExampleMetadata, ExampleName, ExampleParameters, GuestLanguage};
+use crate::model::{
+    ComponentName, ComposableAppGroupName, Example, ExampleKind, ExampleMetadata, ExampleName,
+    ExampleParameters, GuestLanguage, PackageName, TargetExistsResolveDecision,
+    TargetExistsResolveMode,
+};
 use include_dir::{include_dir, Dir, DirEntry};
-use std::collections::HashSet;
-use std::convert::identity;
-use std::fs::File;
-use std::io::Write;
+use itertools::Itertools;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 
@@ -11,118 +13,192 @@ use std::{fs, io};
 pub mod cli;
 pub mod model;
 
-pub trait Examples {
-    fn list_all_examples() -> Vec<Example>;
-    fn instantiate(example: &Example, parameters: &ExampleParameters) -> io::Result<String>;
-    fn instructions(example: &Example, parameters: &ExampleParameters) -> String;
-}
-
-pub struct GolemExamples {}
-
 static EXAMPLES: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/examples");
 static ADAPTERS: Dir<'_> = include_dir!("$OUT_DIR/golem-wit/adapters");
 static WIT: Dir<'_> = include_dir!("$OUT_DIR/golem-wit/wit/deps");
 
-impl Examples for GolemExamples {
-    fn list_all_examples() -> Vec<Example> {
-        let mut result: Vec<Example> = vec![];
-        for entry in EXAMPLES.entries() {
-            if let Some(lang_dir) = entry.as_dir() {
-                let lang_dir_name = lang_dir.path().file_name().unwrap().to_str().unwrap();
-                if let Some(lang) = GuestLanguage::from_string(lang_dir_name) {
-                    let adapters_path =
-                        Path::new(lang.tier().name()).join("wasi_snapshot_preview1.wasm");
+fn all_examples() -> Vec<Example> {
+    let mut result: Vec<Example> = vec![];
+    for entry in EXAMPLES.entries() {
+        if let Some(lang_dir) = entry.as_dir() {
+            let lang_dir_name = lang_dir.path().file_name().unwrap().to_str().unwrap();
+            if let Some(lang) = GuestLanguage::from_string(lang_dir_name) {
+                let adapters_path =
+                    Path::new(lang.tier().name()).join("wasi_snapshot_preview1.wasm");
 
-                    for sub_entry in lang_dir.entries() {
-                        if let Some(example_dir) = sub_entry.as_dir() {
-                            let example_dir_name =
-                                example_dir.path().file_name().unwrap().to_str().unwrap();
-                            if example_dir_name != "INSTRUCTIONS"
-                                && !example_dir_name.starts_with('.')
-                            {
-                                let example = parse_example(
-                                    &lang,
-                                    lang_dir.path(),
-                                    Path::new("INSTRUCTIONS"),
-                                    &adapters_path,
-                                    example_dir.path(),
-                                );
-                                result.push(example);
-                            }
+                for sub_entry in lang_dir.entries() {
+                    if let Some(example_dir) = sub_entry.as_dir() {
+                        let example_dir_name =
+                            example_dir.path().file_name().unwrap().to_str().unwrap();
+                        if example_dir_name != "INSTRUCTIONS" && !example_dir_name.starts_with('.')
+                        {
+                            let example = parse_example(
+                                lang,
+                                lang_dir.path(),
+                                Path::new("INSTRUCTIONS"),
+                                &adapters_path,
+                                example_dir.path(),
+                            );
+                            result.push(example);
                         }
                     }
-                } else {
-                    panic!("Invalid guest language name: {lang_dir_name}");
                 }
+            } else {
+                panic!("Invalid guest language name: {lang_dir_name}");
             }
         }
-        result
+    }
+    result
+}
+
+pub fn all_standalone_examples() -> Vec<Example> {
+    all_examples()
+        .into_iter()
+        .filter(|example| matches!(example.kind, ExampleKind::Standalone))
+        .collect()
+}
+
+#[derive(Debug, Default)]
+pub struct ComposableAppExample {
+    pub common: Option<Example>,
+    pub components: Vec<Example>,
+}
+
+pub fn all_composable_app_examples(
+) -> BTreeMap<GuestLanguage, BTreeMap<ComposableAppGroupName, ComposableAppExample>> {
+    let mut examples =
+        BTreeMap::<GuestLanguage, BTreeMap<ComposableAppGroupName, ComposableAppExample>>::new();
+
+    fn app_examples<'a>(
+        examples: &'a mut BTreeMap<
+            GuestLanguage,
+            BTreeMap<ComposableAppGroupName, ComposableAppExample>,
+        >,
+        language: GuestLanguage,
+        group: &ComposableAppGroupName,
+    ) -> &'a mut ComposableAppExample {
+        let groups = examples.entry(language).or_default();
+        if !groups.contains_key(group) {
+            groups.insert(group.clone(), ComposableAppExample::default());
+        }
+        groups.get_mut(group).unwrap()
     }
 
-    fn instantiate(example: &Example, parameters: &ExampleParameters) -> io::Result<String> {
-        instantiate_directory(
-            &EXAMPLES,
-            &example.example_path,
-            &parameters
-                .target_path
-                .join(parameters.component_name.as_string()),
-            parameters,
-            &example.exclude,
-            &example.transform_exclude,
-            true,
-        )?;
-        if let Some(adapter_path) = &example.adapter {
-            copy(
-                &ADAPTERS,
-                adapter_path,
-                &parameters
-                    .target_path
-                    .join(parameters.component_name.as_string())
-                    .join("adapters")
-                    .join(example.language.tier().name())
-                    .join(adapter_path.file_name().unwrap().to_str().unwrap()),
-            )?;
-        }
-        let wit_deps_targets = {
-            match &example.wit_deps_targets {
-                Some(paths) => paths
-                    .iter()
-                    .map(|path| {
-                        parameters
-                            .target_path
-                            .join(parameters.component_name.as_string())
-                            .join(path)
-                    })
-                    .collect(),
-                None => vec![parameters
-                    .target_path
-                    .join(parameters.component_name.as_string())
-                    .join("wit")
-                    .join("deps")],
+    for example in all_examples() {
+        match &example.kind {
+            ExampleKind::Standalone => continue,
+            ExampleKind::ComposableAppCommon { group } => {
+                let common = &mut app_examples(&mut examples, example.language, group).common;
+                if let Some(common) = common {
+                    panic!(
+                        "Multiple common examples were found for {} - {}, example paths: {}, {}",
+                        example.language,
+                        group,
+                        common.example_path.display(),
+                        example.example_path.display()
+                    );
+                }
+                *common = Some(example);
             }
+            ExampleKind::ComposableAppComponent { group } => {
+                app_examples(&mut examples, example.language, group)
+                    .components
+                    .push(example);
+            }
+        }
+    }
+
+    examples
+}
+
+pub fn instantiate_example(
+    example: &Example,
+    parameters: &ExampleParameters,
+    resolve_mode: TargetExistsResolveMode,
+) -> io::Result<String> {
+    instantiate_directory(
+        &EXAMPLES,
+        &example.example_path,
+        &parameters.target_path,
+        example,
+        parameters,
+        resolve_mode,
+    )?;
+    if let Some(adapter_path) = &example.adapter_source {
+        let adapter_dir = {
+            match &example.adapter_target {
+                Some(target) => target.clone(),
+                None => parameters.target_path.join("adapters"),
+            }
+            .join(example.language.tier().name())
         };
-        for wit_dep in &example.wit_deps {
-            for target_wit_deps in &wit_deps_targets {
-                let target = target_wit_deps.join(wit_dep.file_name().unwrap().to_str().unwrap());
-                copy_all(&WIT, wit_dep, &target)?;
-            }
+
+        fs::create_dir_all(&adapter_dir)?;
+        copy(
+            &ADAPTERS,
+            adapter_path,
+            &adapter_dir.join(adapter_path.file_name().unwrap().to_str().unwrap()),
+            TargetExistsResolveMode::MergeOrSkip,
+        )?;
+    }
+    let wit_deps_targets = {
+        match &example.wit_deps_targets {
+            Some(paths) => paths
+                .iter()
+                .map(|path| parameters.target_path.join(path))
+                .collect(),
+            None => vec![parameters.target_path.join("wit").join("deps")],
         }
-        Ok(Self::instructions(example, parameters))
+    };
+    for wit_dep in &example.wit_deps {
+        for target_wit_deps in &wit_deps_targets {
+            let target = target_wit_deps.join(wit_dep.file_name().unwrap().to_str().unwrap());
+            copy_all(&WIT, wit_dep, &target, TargetExistsResolveMode::MergeOrSkip)?;
+        }
+    }
+    Ok(render_example_instructions(example, parameters))
+}
+
+pub fn add_component_by_example(
+    common_example: Option<&Example>,
+    component_example: &Example,
+    target_path: &Path,
+    package_name: &PackageName,
+) -> io::Result<()> {
+    let parameters = ExampleParameters {
+        component_name: ComponentName::new(package_name.to_kebab_case()),
+        package_name: package_name.clone(),
+        target_path: target_path.into(),
+    };
+
+    if let Some(common_example) = common_example {
+        instantiate_example(
+            common_example,
+            &parameters,
+            TargetExistsResolveMode::MergeOrSkip,
+        )?;
     }
 
-    fn instructions(example: &Example, parameters: &ExampleParameters) -> String {
-        transform(&example.instructions, parameters)
-    }
+    instantiate_example(
+        component_example,
+        &parameters,
+        TargetExistsResolveMode::MergeOrFail,
+    )?;
+
+    Ok(())
+}
+
+pub fn render_example_instructions(example: &Example, parameters: &ExampleParameters) -> String {
+    transform(&example.instructions, parameters)
 }
 
 fn instantiate_directory(
     catalog: &Dir<'_>,
     source: &Path,
     target: &Path,
+    example: &Example,
     parameters: &ExampleParameters,
-    excludes: &HashSet<String>,
-    transform_excludes: &HashSet<String>,
-    filter_metadata: bool,
+    resolve_mode: TargetExistsResolveMode,
 ) -> io::Result<()> {
     fs::create_dir_all(target)?;
     for entry in catalog
@@ -131,7 +207,7 @@ fn instantiate_directory(
         .entries()
     {
         let name = entry.path().file_name().unwrap().to_str().unwrap();
-        if !excludes.contains(name) && (!filter_metadata || name != "metadata.json") {
+        if !example.exclude.contains(name) && (name != "metadata.json") {
             let name = file_name_transform(name, parameters);
             match entry {
                 DirEntry::Dir(dir) => {
@@ -139,10 +215,9 @@ fn instantiate_directory(
                         catalog,
                         dir.path(),
                         &target.join(&name),
+                        example,
                         parameters,
-                        excludes,
-                        transform_excludes,
-                        false,
+                        resolve_mode,
                     )?;
                 }
                 DirEntry::File(file) => {
@@ -151,7 +226,8 @@ fn instantiate_directory(
                         file.path(),
                         &target.join(&name),
                         parameters,
-                        !transform_excludes.contains(&name),
+                        example.transform && !example.transform_exclude.contains(&name),
+                        resolve_mode,
                     )?;
                 }
             }
@@ -166,52 +242,55 @@ fn instantiate_file(
     target: &Path,
     parameters: &ExampleParameters,
     transform_contents: bool,
+    resolve_mode: TargetExistsResolveMode,
 ) -> io::Result<()> {
-    let raw_contents = catalog
-        .get_file(source)
-        .unwrap_or_else(|| panic!("Could not find entry {source:?}"))
-        .contents();
-    let mut file = File::create(target)?;
-
-    let transformed_contents = transform_contents
-        .then(|| String::from_utf8(raw_contents.to_vec()).ok())
-        .and_then(identity)
-        .map(|contents| transform(contents, parameters));
-
-    if let Some(transformed_contents) = transformed_contents {
-        file.write_all(transformed_contents.as_bytes())?;
-    } else {
-        file.write_all(raw_contents)?;
+    match get_resolved_contents(catalog, source, target, resolve_mode)? {
+        Some(contents) => fs::write(
+            target,
+            if transform_contents {
+                transform(&contents, parameters)
+            } else {
+                contents
+            },
+        ),
+        None => Ok(()),
     }
-
-    Ok(())
 }
 
-fn copy(catalog: &Dir<'_>, source: &Path, target: &Path) -> io::Result<()> {
-    let contents = catalog
-        .get_file(source)
-        .unwrap_or_else(|| panic!("Could not find entry {source:?}"))
-        .contents();
-
-    if let Some(parent) = target.parent() {
-        fs::create_dir_all(parent)?;
+fn copy(
+    catalog: &Dir<'_>,
+    source: &Path,
+    target: &Path,
+    resolve_mode: TargetExistsResolveMode,
+) -> io::Result<()> {
+    match get_resolved_contents(catalog, source, target, resolve_mode)? {
+        Some(contents) => fs::write(target, contents),
+        None => Ok(()),
     }
-    let mut file = File::create(target)?;
-    file.write_all(contents)?;
-    Ok(())
 }
 
-fn copy_all(catalog: &Dir<'_>, source_path: &Path, target_path: &Path) -> io::Result<()> {
+fn copy_all(
+    catalog: &Dir<'_>,
+    source_path: &Path,
+    target_path: &Path,
+    resolve_mode: TargetExistsResolveMode,
+) -> io::Result<()> {
+    let source_dir = catalog.get_dir(source_path).ok_or_else(|| {
+        io::Error::other(format!(
+            "Could not find dir {} in catalog",
+            source_path.display()
+        ))
+    })?;
+
     fs::create_dir_all(target_path)?;
 
-    let source_dir = catalog
-        .get_dir(source_path)
-        .unwrap_or_else(|| panic!("Could not find entry {source_path:?}"));
     for file in source_dir.files() {
-        let contents = file.contents();
-        let mut file =
-            File::create(target_path.join(file.path().file_name().unwrap().to_str().unwrap()))?;
-        file.write_all(contents)?;
+        copy(
+            catalog,
+            file.path(),
+            &target_path.join(file.path().file_name().unwrap().to_str().unwrap()),
+            resolve_mode,
+        )?;
     }
 
     Ok(())
@@ -239,8 +318,105 @@ fn file_name_transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> 
     transform(str, parameters).replace("Cargo.toml._", "Cargo.toml") // HACK because cargo package ignores every subdirectory containing a Cargo.toml
 }
 
+fn check_target(
+    target: &Path,
+    resolve_mode: TargetExistsResolveMode,
+) -> io::Result<Option<TargetExistsResolveDecision>> {
+    if !target.exists() {
+        return Ok(None);
+    }
+
+    let get_merge = || -> io::Result<Option<TargetExistsResolveDecision>> {
+        let file_name = target
+            .file_name()
+            .ok_or_else(|| {
+                io::Error::other(format!(
+                    "Failed to get file name for target: {}",
+                    target.display()
+                ))
+            })
+            .and_then(|file_name| {
+                file_name.to_str().ok_or_else(|| {
+                    io::Error::other(format!(
+                        "Failed to convert file name to string: {}",
+                        file_name.to_string_lossy()
+                    ))
+                })
+            })?;
+
+        match file_name {
+            ".gitignore" => {
+                let current_content = fs::read_to_string(target)?;
+                Ok(Some(TargetExistsResolveDecision::Merge(Box::new(
+                    move |new_content: &str| -> String {
+                        current_content
+                            .lines()
+                            .chain(new_content.lines())
+                            .collect::<BTreeSet<&str>>()
+                            .iter()
+                            .join("\n")
+                    },
+                ))))
+            }
+            _ => Ok(None),
+        }
+    };
+
+    let target_already_exists = || {
+        Err(io::Error::other(format!(
+            "Target ({}) already exists!",
+            target.display()
+        )))
+    };
+
+    match resolve_mode {
+        TargetExistsResolveMode::Skip => Ok(Some(TargetExistsResolveDecision::Skip)),
+        TargetExistsResolveMode::MergeOrSkip => match get_merge()? {
+            Some(merge) => Ok(Some(merge)),
+            None => Ok(Some(TargetExistsResolveDecision::Skip)),
+        },
+        TargetExistsResolveMode::Fail => target_already_exists(),
+        TargetExistsResolveMode::MergeOrFail => match get_merge()? {
+            Some(merge) => Ok(Some(merge)),
+            None => target_already_exists(),
+        },
+    }
+}
+
+fn get_contents(catalog: &Dir<'_>, source: &Path) -> io::Result<String> {
+    String::from_utf8(
+        catalog
+            .get_file(source)
+            .ok_or_else(|| io::Error::other(format!("Could not find entry {}", source.display())))?
+            .contents()
+            .to_vec(),
+    )
+    .map_err(|err| {
+        io::Error::other(format!(
+            "Could not parse utf8 contents for {}: {:?}",
+            source.display(),
+            err
+        ))
+    })
+}
+
+fn get_resolved_contents(
+    catalog: &Dir<'_>,
+    source: &Path,
+    target: &Path,
+    resolve_mode: TargetExistsResolveMode,
+) -> io::Result<Option<String>> {
+    match check_target(target, resolve_mode)? {
+        None => Ok(Some(get_contents(catalog, source)?)),
+        Some(TargetExistsResolveDecision::Skip) => Ok(None),
+        Some(TargetExistsResolveDecision::Merge(merge)) => {
+            Ok(Some(merge(&get_contents(catalog, source)?)))
+        }
+    }
+}
+
 fn parse_example(
-    lang: &GuestLanguage,
+    lang: GuestLanguage,
     lang_path: &Path,
     default_instructions_file_name: &Path,
     adapters_path: &Path,
@@ -283,25 +459,53 @@ fn parse_example(
         wit_deps.push(Path::new("sockets").to_path_buf());
     }
 
+    let kind = match (metadata.app_common_group, metadata.app_component_group) {
+        (None, None) => ExampleKind::Standalone,
+        (Some(group), None) => ExampleKind::ComposableAppCommon {
+            group: ComposableAppGroupName::from_string(group),
+        },
+        (None, Some(group)) => ExampleKind::ComposableAppComponent {
+            group: ComposableAppGroupName::from_string(group),
+        },
+        (Some(_), Some(_)) => panic!(
+            "Only one of appCommonGroup and appComponentGroup can be specified, example root: {}",
+            example_root.display()
+        ),
+    };
+
+    let requires_adapter = metadata
+        .requires_adapter
+        .unwrap_or(metadata.adapter_target.is_some());
+
     Example {
         name,
-        language: lang.clone(),
+        kind,
+        language: lang,
         description: metadata.description,
         example_path: example_root.to_path_buf(),
         instructions,
-        adapter: if metadata.requires_adapter.unwrap_or(true) {
-            Some(adapters_path.to_path_buf())
-        } else {
-            None
+        adapter_source: {
+            if requires_adapter {
+                Some(adapters_path.to_path_buf())
+            } else {
+                None
+            }
         },
+        adapter_target: metadata.adapter_target.map(PathBuf::from),
         wit_deps,
         wit_deps_targets: metadata
             .wit_deps_paths
             .map(|dirs| dirs.iter().map(PathBuf::from).collect()),
-        exclude: metadata.exclude.iter().cloned().collect(),
+        exclude: metadata
+            .exclude
+            .unwrap_or_default()
+            .iter()
+            .cloned()
+            .collect(),
         transform_exclude: metadata
             .transform_exclude
             .map(|te| te.iter().cloned().collect())
             .unwrap_or_default(),
+        transform: metadata.transform.unwrap_or(true),
     }
 }

@@ -1,0 +1,10 @@
+{
+  "description": "Composable App Common template for CPP",
+  "appCommonGroup": "default",
+  "adapterTarget": "common-adapters",
+  "requiresGolemHostWIT": true,
+  "requiresWASI": true,
+  "witDepsPaths": [
+    "common-wit-deps"
+  ]
+}

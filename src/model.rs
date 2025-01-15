@@ -73,7 +73,16 @@ impl fmt::Display for ComponentName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, EnumIter, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum ExampleKind {
+    Standalone,
+    ComposableAppCommon { group: ComposableAppGroupName },
+    ComposableAppComponent { group: ComposableAppGroupName },
+}
+
+#[derive(
+    Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, EnumIter, Serialize, Deserialize,
+)]
 pub enum GuestLanguage {
     Rust,
     Go,
@@ -305,18 +314,61 @@ impl fmt::Display for ExampleName {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, derive_more::FromStr, Serialize, Deserialize,
+)]
+pub struct ComposableAppGroupName(String);
+
+impl ComposableAppGroupName {
+    pub fn from_string(s: impl AsRef<str>) -> ComposableAppGroupName {
+        ComposableAppGroupName(s.as_ref().to_string())
+    }
+
+    pub fn as_string(&self) -> &str {
+        &self.0
+    }
+}
+
+impl Default for ComposableAppGroupName {
+    fn default() -> Self {
+        ComposableAppGroupName("default".to_string())
+    }
+}
+
+impl fmt::Display for ComposableAppGroupName {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub enum TargetExistsResolveMode {
+    Skip,
+    MergeOrSkip,
+    Fail,
+    MergeOrFail,
+}
+
+pub enum TargetExistsResolveDecision {
+    Skip,
+    Merge(Box<dyn FnOnce(&str) -> String>),
+}
+
+#[derive(Debug, Clone)]
 pub struct Example {
     pub name: ExampleName,
+    pub kind: ExampleKind,
     pub language: GuestLanguage,
     pub description: String,
     pub example_path: PathBuf,
     pub instructions: String,
-    pub adapter: Option<PathBuf>,
+    pub adapter_source: Option<PathBuf>,
+    pub adapter_target: Option<PathBuf>,
     pub wit_deps: Vec<PathBuf>,
     pub wit_deps_targets: Option<Vec<PathBuf>>,
     pub exclude: HashSet<String>,
     pub transform_exclude: HashSet<String>,
+    pub transform: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -329,18 +381,25 @@ pub struct ExampleParameters {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct ExampleMetadata {
     pub description: String,
+    #[serde(rename = "appCommonGroup")]
+    pub app_common_group: Option<String>,
+    #[serde(rename = "appComponentGroup")]
+    pub app_component_group: Option<String>,
     #[serde(rename = "requiresAdapter")]
     pub requires_adapter: Option<bool>,
+    #[serde(rename = "adapterTarget")]
+    pub adapter_target: Option<String>,
     #[serde(rename = "requiresGolemHostWIT")]
     pub requires_golem_host_wit: Option<bool>,
     #[serde(rename = "requiresWASI")]
     pub requires_wasi: Option<bool>,
     #[serde(rename = "witDepsPaths")]
     pub wit_deps_paths: Option<Vec<String>>,
-    pub exclude: Vec<String>,
+    pub exclude: Option<Vec<String>>,
     pub instructions: Option<String>,
     #[serde(rename = "transformExclude")]
     pub transform_exclude: Option<Vec<String>>,
+    pub transform: Option<bool>,
 }
 
 #[cfg(test)]

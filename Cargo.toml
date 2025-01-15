@@ -15,6 +15,8 @@ derive_more = { version = "1.0.0", features = ["from_str"] }
 golem-wit = { version = "1.1.1" }
 include_dir = { version = "0.7.4" }
 Inflector = { version = "0.11.4" }
+itertools = "0.14.0"
+nanoid = "0.4.0"
 once_cell = { version = "1.20.2" }
 fancy-regex = { version = "0.14.0" }
 serde = { version = "1.0.216", features = ["derive"] }
