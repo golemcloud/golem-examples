@@ -35,7 +35,6 @@ components:
       - out/components/component_name.wasm
     clean:
     - src/binding
-    - wit-generated
     customCommands:
       install:
       - command: npm install
