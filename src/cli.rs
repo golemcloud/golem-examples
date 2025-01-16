@@ -24,7 +24,7 @@ impl NameOrLanguage {
             .clone()
             .unwrap_or(ExampleName::from_string(format!(
                 "{}-default",
-                self.language.clone().unwrap_or(GuestLanguage::Rust).id()
+                self.language.unwrap_or(GuestLanguage::Rust).id()
             )))
     }
 }

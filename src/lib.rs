@@ -5,6 +5,7 @@ use crate::model::{
 };
 use include_dir::{include_dir, Dir, DirEntry};
 use itertools::Itertools;
+use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::{fs, io};
@@ -126,11 +127,13 @@ pub fn instantiate_example(
     )?;
     if let Some(adapter_path) = &example.adapter_source {
         let adapter_dir = {
-            match &example.adapter_target {
-                Some(target) => target.clone(),
-                None => parameters.target_path.join("adapters"),
-            }
-            .join(example.language.tier().name())
+            parameters
+                .target_path
+                .join(match &example.adapter_target {
+                    Some(target) => target.clone(),
+                    None => parameters.target_path.join("adapters"),
+                })
+                .join(example.language.tier().name())
         };
 
         fs::create_dir_all(&adapter_dir)?;
@@ -245,14 +248,25 @@ fn instantiate_file(
     resolve_mode: TargetExistsResolveMode,
 ) -> io::Result<()> {
     match get_resolved_contents(catalog, source, target, resolve_mode)? {
-        Some(contents) => fs::write(
-            target,
+        Some(contents) => {
             if transform_contents {
-                transform(&contents, parameters)
+                fs::write(
+                    target,
+                    transform(
+                        std::str::from_utf8(contents.as_ref()).map_err(|err| {
+                            io::Error::other(format!(
+                                "Failed to decode as utf8, source: {}, err: {}",
+                                source.display(),
+                                err
+                            ))
+                        })?,
+                        parameters,
+                    ),
+                )
             } else {
-                contents
-            },
-        ),
+                fs::write(target, contents)
+            }
+        }
         None => Ok(()),
     }
 }
@@ -346,15 +360,25 @@ fn check_target(
 
         match file_name {
             ".gitignore" => {
-                let current_content = fs::read_to_string(target)?;
+                let target = target.to_path_buf();
+                let current_content = fs::read_to_string(&target)?;
                 Ok(Some(TargetExistsResolveDecision::Merge(Box::new(
-                    move |new_content: &str| -> String {
-                        current_content
+                    move |new_content: &[u8]| -> io::Result<Vec<u8>> {
+                        Ok(current_content
                             .lines()
-                            .chain(new_content.lines())
+                            .chain(
+                                std::str::from_utf8(new_content).map_err(|err| {
+                                    io::Error::other(format!(
+                                        "Failed to decode new content for merge as utf8, target: {}, err: {}",
+                                        target.display(),
+                                        err
+                                    ))
+                                })?.lines(),
+                            )
                             .collect::<BTreeSet<&str>>()
                             .iter()
                             .join("\n")
+                            .into_bytes())
                     },
                 ))))
             }
@@ -383,34 +407,24 @@ fn check_target(
     }
 }
 
-fn get_contents(catalog: &Dir<'_>, source: &Path) -> io::Result<String> {
-    String::from_utf8(
-        catalog
-            .get_file(source)
-            .ok_or_else(|| io::Error::other(format!("Could not find entry {}", source.display())))?
-            .contents()
-            .to_vec(),
-    )
-    .map_err(|err| {
-        io::Error::other(format!(
-            "Could not parse utf8 contents for {}: {:?}",
-            source.display(),
-            err
-        ))
-    })
+fn get_contents<'a>(catalog: &Dir<'a>, source: &'a Path) -> io::Result<&'a [u8]> {
+    Ok(catalog
+        .get_file(source)
+        .ok_or_else(|| io::Error::other(format!("Could not find entry {}", source.display())))?
+        .contents())
 }
 
-fn get_resolved_contents(
-    catalog: &Dir<'_>,
-    source: &Path,
-    target: &Path,
+fn get_resolved_contents<'a>(
+    catalog: &Dir<'a>,
+    source: &'a Path,
+    target: &'a Path,
     resolve_mode: TargetExistsResolveMode,
-) -> io::Result<Option<String>> {
+) -> io::Result<Option<Cow<'a, [u8]>>> {
     match check_target(target, resolve_mode)? {
-        None => Ok(Some(get_contents(catalog, source)?)),
+        None => Ok(Some(Cow::Borrowed(get_contents(catalog, source)?))),
         Some(TargetExistsResolveDecision::Skip) => Ok(None),
         Some(TargetExistsResolveDecision::Merge(merge)) => {
-            Ok(Some(merge(&get_contents(catalog, source)?)))
+            Ok(Some(Cow::Owned(merge(get_contents(catalog, source)?)?)))
         }
     }
 }
@@ -428,16 +442,39 @@ fn parse_example(
         .contents();
     let metadata = serde_json::from_slice::<ExampleMetadata>(raw_metadata)
         .expect("Failed to parse metadata JSON");
-    let instructions_path = match metadata.instructions {
-        Some(instructions_file_name) => lang_path.join(instructions_file_name),
-        None => lang_path.join(default_instructions_file_name),
+
+    let kind = match (metadata.app_common_group, metadata.app_component_group) {
+        (None, None) => ExampleKind::Standalone,
+        (Some(group), None) => ExampleKind::ComposableAppCommon {
+            group: ComposableAppGroupName::from_string(group),
+        },
+        (None, Some(group)) => ExampleKind::ComposableAppComponent {
+            group: ComposableAppGroupName::from_string(group),
+        },
+        (Some(_), Some(_)) => panic!(
+            "Only one of appCommonGroup and appComponentGroup can be specified, example root: {}",
+            example_root.display()
+        ),
     };
-    let raw_instructions = EXAMPLES
-        .get_file(instructions_path)
-        .expect("Failed to read instructions")
-        .contents();
-    let instructions =
-        String::from_utf8(raw_instructions.to_vec()).expect("Failed to decode instructions");
+
+    let instructions = match &kind {
+        ExampleKind::Standalone => {
+            let instructions_path = match metadata.instructions {
+                Some(instructions_file_name) => lang_path.join(instructions_file_name),
+                None => lang_path.join(default_instructions_file_name),
+            };
+
+            let raw_instructions = EXAMPLES
+                .get_file(instructions_path)
+                .expect("Failed to read instructions")
+                .contents();
+
+            String::from_utf8(raw_instructions.to_vec()).expect("Failed to decode instructions")
+        }
+        ExampleKind::ComposableAppCommon { .. } => "".to_string(),
+        ExampleKind::ComposableAppComponent { .. } => "".to_string(),
+    };
+
     let name = ExampleName::from_string(example_root.file_name().unwrap().to_str().unwrap());
 
     let mut wit_deps: Vec<PathBuf> = vec![];
@@ -458,20 +495,6 @@ fn parse_example(
         wit_deps.push(Path::new("random").to_path_buf());
         wit_deps.push(Path::new("sockets").to_path_buf());
     }
-
-    let kind = match (metadata.app_common_group, metadata.app_component_group) {
-        (None, None) => ExampleKind::Standalone,
-        (Some(group), None) => ExampleKind::ComposableAppCommon {
-            group: ComposableAppGroupName::from_string(group),
-        },
-        (None, Some(group)) => ExampleKind::ComposableAppComponent {
-            group: ComposableAppGroupName::from_string(group),
-        },
-        (Some(_), Some(_)) => panic!(
-            "Only one of appCommonGroup and appComponentGroup can be specified, example root: {}",
-            example_root.display()
-        ),
-    };
 
     let requires_adapter = metadata
         .requires_adapter

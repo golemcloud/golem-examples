@@ -3,10 +3,10 @@ use inflector::Inflector;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
-use std::fmt;
 use std::fmt::Formatter;
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::{fmt, io};
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
@@ -349,9 +349,11 @@ pub enum TargetExistsResolveMode {
     MergeOrFail,
 }
 
+pub type MergeContents = Box<dyn FnOnce(&[u8]) -> io::Result<Vec<u8>>>;
+
 pub enum TargetExistsResolveDecision {
     Skip,
-    Merge(Box<dyn FnOnce(&str) -> String>),
+    Merge(MergeContents),
 }
 
 #[derive(Debug, Clone)]

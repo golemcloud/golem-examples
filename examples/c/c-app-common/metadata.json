@@ -6,5 +6,6 @@
   "requiresWASI": true,
   "witDepsPaths": [
     "common-wit-deps"
-  ]
+  ],
+  "transform": false
 }

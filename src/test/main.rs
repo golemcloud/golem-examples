@@ -1,8 +1,3 @@
-use std::io;
-use std::path::PathBuf;
-use std::process::exit;
-use std::str::FromStr;
-
 use clap::Parser;
 use colored::{ColoredString, Colorize};
 use golem_examples::model::{
@@ -15,6 +10,10 @@ use golem_examples::{
 };
 use nanoid::nanoid;
 use regex::Regex;
+use std::io;
+use std::path::PathBuf;
+use std::process::exit;
+use std::str::FromStr;
 
 #[derive(Parser, Debug)]
 #[command()]
@@ -94,10 +93,15 @@ pub fn main() -> io::Result<()> {
             let target_path = PathBuf::from(target_path.unwrap_or_else(|| "examples".to_string()))
                 .join("app-default");
 
+            if target_path.exists() {
+                println!("Deleting {}", target_path.display().to_string().blue());
+                std::fs::remove_dir_all(&target_path)?;
+            }
+
             let app_examples = all_composable_app_examples();
 
             for (language, examples) in app_examples {
-                println!("Testing language {}", language);
+                println!("Adding components for language {}", language.name().blue());
 
                 let default_examples = examples.get(&ComposableAppGroupName::default()).unwrap();
                 assert_eq!(default_examples.components.len(), 1);
@@ -105,7 +109,11 @@ pub fn main() -> io::Result<()> {
 
                 for _ in 1..=4 {
                     let component_name = format!("app:comp-{}", nanoid!(10, &alphabet));
-                    println!("Adding component {} ({})", component_name, language);
+                    println!(
+                        "Adding component {} ({})",
+                        component_name.bright_blue(),
+                        language.name().blue()
+                    );
                     let package_name = PackageName::from_string(component_name).unwrap();
                     add_component_by_example(
                         default_examples.common.as_ref(),
@@ -115,6 +123,12 @@ pub fn main() -> io::Result<()> {
                     )?
                 }
             }
+
+            println!("Building with default profile");
+            std::process::Command::new("golem-cli")
+                .args(["app", "build"])
+                .current_dir(target_path)
+                .status()?;
 
             Ok(())
         }
