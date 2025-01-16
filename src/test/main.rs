@@ -111,7 +111,7 @@ pub fn main() -> io::Result<()> {
 
             let mut used_languages = HashSet::<GuestLanguage>::new();
             for (language, examples) in &app_examples {
-                if !languages.is_empty() && !languages.contains(&language) {
+                if !languages.is_empty() && !languages.contains(language) {
                     continue;
                 }
 
