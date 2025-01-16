@@ -47,10 +47,13 @@ When calling `golem-new` the user specifies a **template name**. The provided co
 There is an optional parameter for defining a **package name**, which defaults to `golem:component`. It has to be in the `pack:name` format. The first part of the package name is called **package namespace**.
 
 The following occurrences get replaced to the provided component name, applying the casing used in the template:
+- `componentname` (unchanged)
 - `component-name`
+- `componentName`
 - `ComponentName`
 - `component_name`
 - `pack::name`
+- `pa_ck::na_me` (for rust binding import)
 - `pack:name`
 - `pack_name`
 - `pack-name`

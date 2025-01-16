@@ -1,7 +1,7 @@
 use clap::Parser;
 use colored::{ColoredString, Colorize};
 use golem_examples::model::{
-    ComponentName, ComposableAppGroupName, Example, ExampleParameters, PackageName,
+    ComponentName, ComposableAppGroupName, Example, ExampleParameters, GuestLanguage, PackageName,
     TargetExistsResolveMode,
 };
 use golem_examples::{
@@ -10,6 +10,7 @@ use golem_examples::{
 };
 use nanoid::nanoid;
 use regex::Regex;
+use std::collections::HashSet;
 use std::io;
 use std::path::PathBuf;
 use std::process::exit;
@@ -37,6 +38,10 @@ enum Command {
     App {
         #[arg(long)]
         target_path: Option<String>,
+
+        // Filter for some languages, can be defined multiple times
+        #[arg(short, long)]
+        language: Vec<GuestLanguage>,
     },
 }
 
@@ -87,7 +92,11 @@ pub fn main() -> io::Result<()> {
 
             Ok(())
         }
-        Command::App { target_path } => {
+        Command::App {
+            target_path,
+            language,
+        } => {
+            let languages = language.into_iter().collect::<Vec<_>>();
             let alphabet: [char; 8] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
             let target_path = PathBuf::from(target_path.unwrap_or_else(|| "examples".to_string()))
@@ -100,14 +109,20 @@ pub fn main() -> io::Result<()> {
 
             let app_examples = all_composable_app_examples();
 
-            for (language, examples) in app_examples {
+            let mut used_languages = HashSet::<GuestLanguage>::new();
+            for (language, examples) in &app_examples {
+                if !languages.is_empty() && !languages.contains(&language) {
+                    continue;
+                }
+
                 println!("Adding components for language {}", language.name().blue());
+                used_languages.insert(*language);
 
                 let default_examples = examples.get(&ComposableAppGroupName::default()).unwrap();
                 assert_eq!(default_examples.components.len(), 1);
                 let default_component_example = &default_examples.components[0];
 
-                for _ in 1..=4 {
+                for _ in 1..=2 {
                     let component_name = format!("app:comp-{}", nanoid!(10, &alphabet));
                     println!(
                         "Adding component {} ({})",
@@ -124,10 +139,20 @@ pub fn main() -> io::Result<()> {
                 }
             }
 
+            if used_languages.contains(&GuestLanguage::JavaScript)
+                || used_languages.contains(&GuestLanguage::TypeScript)
+            {
+                println!("Installing npm packages with golem-ci");
+                std::process::Command::new("golem-cli")
+                    .args(["app", "npm-install"])
+                    .current_dir(&target_path)
+                    .status()?;
+            }
+
             println!("Building with default profile");
             std::process::Command::new("golem-cli")
                 .args(["app", "build"])
-                .current_dir(target_path)
+                .current_dir(&target_path)
                 .status()?;
 
             Ok(())
@@ -156,10 +181,10 @@ fn test_example(
     let component_name = ComponentName::new(example.name.as_string().to_string() + "-comp");
     let package_name =
         PackageName::from_string("golemx:componentx").ok_or("failed to create package name")?;
-    let component_path = target_path.join(component_name.as_string());
+    let component_path = target_path.join(component_name.as_str());
 
     println!("Target path: {}", target_path.display().to_string().blue());
-    println!("Component name: {}", component_name.as_string().blue());
+    println!("Component name: {}", component_name.as_str().blue());
     println!("Package name: {}", package_name.to_string().blue());
     println!(
         "Component path: {}",
@@ -169,7 +194,7 @@ fn test_example(
     let example_parameters = ExampleParameters {
         component_name: component_name.clone(),
         package_name,
-        target_path: target_path.join(component_name.as_string()),
+        target_path: target_path.join(component_name.as_str()),
     };
 
     let run = |command: &str, args: Vec<&str>| -> Result<(), String> {

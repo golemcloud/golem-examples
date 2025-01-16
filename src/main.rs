@@ -28,7 +28,7 @@ pub fn main() {
                             package_name: package_name
                                 .clone()
                                 .unwrap_or(PackageName::from_string("golem:component").unwrap()),
-                            target_path: cwd.join(component_name.as_string()),
+                            target_path: cwd.join(component_name.as_str()),
                         },
                         TargetExistsResolveMode::Fail,
                     ) {

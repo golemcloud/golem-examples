@@ -5,7 +5,7 @@
 
 static uint64_t total = 0;
 
-void exports_component_name_exports_component_name_api_add(uint64_t value) {
+void exports_pack_name_exports_component_name_api_add(uint64_t value) {
     // Example common lib call
     // std::cout << common_lib::example_common_function();
     total += value;

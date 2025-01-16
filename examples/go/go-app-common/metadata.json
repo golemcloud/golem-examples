@@ -1,0 +1,11 @@
+{
+  "description": "Composable App Common template for Go",
+  "appCommonGroup": "default",
+  "adapterTarget": "common-adapters",
+  "requiresGolemHostWIT": true,
+  "requiresWASI": true,
+  "witDepsPaths": [
+    "common-wit-deps"
+  ],
+  "transform": false
+}

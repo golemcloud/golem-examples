@@ -312,13 +312,16 @@ fn copy_all(
 
 fn transform(str: impl AsRef<str>, parameters: &ExampleParameters) -> String {
     str.as_ref()
+        .replace("componentname", parameters.component_name.as_str())
         .replace("component-name", &parameters.component_name.to_kebab_case())
         .replace("ComponentName", &parameters.component_name.to_pascal_case())
+        .replace("componentName", &parameters.component_name.to_camel_case())
         .replace("component_name", &parameters.component_name.to_snake_case())
         .replace(
             "pack::name",
             &parameters.package_name.to_string_with_double_colon(),
         )
+        .replace("pa_ck::na_me", &parameters.package_name.to_rust_binding())
         .replace("pack:name", &parameters.package_name.to_string_with_colon())
         .replace("pack_name", &parameters.package_name.to_snake_case())
         .replace("pack-name", &parameters.package_name.to_kebab_case())

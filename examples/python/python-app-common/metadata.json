@@ -1,0 +1,10 @@
+{
+  "description": "Composable App Common template for Python",
+  "appCommonGroup": "default",
+  "requiresGolemHostWIT": true,
+  "requiresWASI": true,
+  "witDepsPaths": [
+    "common-wit-deps"
+  ],
+  "transform": false
+}

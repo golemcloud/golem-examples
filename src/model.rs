@@ -22,7 +22,7 @@ impl ComponentName {
         ComponentName(name.as_ref().to_string())
     }
 
-    pub fn as_string(&self) -> &str {
+    pub fn as_str(&self) -> &str {
         &self.0
     }
 
@@ -245,11 +245,19 @@ impl PackageName {
     }
 
     pub fn to_pascal_case(&self) -> String {
-        format!("{}{}", self.0 .0.to_title_case(), self.0 .1.to_title_case())
+        format!(
+            "{}{}",
+            self.0 .0.to_pascal_case(),
+            self.0 .1.to_pascal_case()
+        )
     }
 
     pub fn to_snake_case(&self) -> String {
-        format!("{}_{}", self.0 .0, self.0 .1)
+        format!(
+            "{}_{}",
+            self.0 .0.to_snake_case(),
+            self.0 .1.to_snake_case()
+        )
     }
 
     pub fn to_string_with_double_colon(&self) -> String {
@@ -266,6 +274,14 @@ impl PackageName {
 
     pub fn to_kebab_case(&self) -> String {
         format!("{}-{}", self.0 .0, self.0 .1)
+    }
+
+    pub fn to_rust_binding(&self) -> String {
+        format!(
+            "{}::{}",
+            self.0 .0.to_snake_case(),
+            self.0 .1.to_snake_case()
+        )
     }
 
     pub fn namespace(&self) -> String {
@@ -447,9 +463,11 @@ mod tests {
     }
 
     static P1: Lazy<PackageName> = Lazy::new(|| PackageName::from_string("foo:bar").unwrap());
+    static P2: Lazy<PackageName> = Lazy::new(|| PackageName::from_string("foo:bar-baz").unwrap());
 
     #[test]
     pub fn package_name_to_pascal_case() {
         assert_eq!(P1.to_pascal_case(), "FooBar");
+        assert_eq!(P2.to_pascal_case(), "FooBarBaz");
     }
 }
