@@ -78,8 +78,13 @@ impl fmt::Display for ComponentName {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum ExampleKind {
     Standalone,
-    ComposableAppCommon { group: ComposableAppGroupName },
-    ComposableAppComponent { group: ComposableAppGroupName },
+    ComposableAppCommon {
+        group: ComposableAppGroupName,
+        skip_if_exists: Option<PathBuf>,
+    },
+    ComposableAppComponent {
+        group: ComposableAppGroupName,
+    },
 }
 
 #[derive(
@@ -403,6 +408,8 @@ pub(crate) struct ExampleMetadata {
     pub description: String,
     #[serde(rename = "appCommonGroup")]
     pub app_common_group: Option<String>,
+    #[serde(rename = "appCommonSkipIfExists")]
+    pub app_common_skip_if_exists: Option<String>,
     #[serde(rename = "appComponentGroup")]
     pub app_component_group: Option<String>,
     #[serde(rename = "requiresAdapter")]

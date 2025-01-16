@@ -88,7 +88,7 @@ pub fn all_composable_app_examples(
     for example in all_examples() {
         match &example.kind {
             ExampleKind::Standalone => continue,
-            ExampleKind::ComposableAppCommon { group } => {
+            ExampleKind::ComposableAppCommon { group, .. } => {
                 let common = &mut app_examples(&mut examples, example.language, group).common;
                 if let Some(common) = common {
                     panic!(
@@ -175,11 +175,25 @@ pub fn add_component_by_example(
     };
 
     if let Some(common_example) = common_example {
-        instantiate_example(
-            common_example,
-            &parameters,
-            TargetExistsResolveMode::MergeOrSkip,
-        )?;
+        let skip = {
+            if let ExampleKind::ComposableAppCommon {
+                skip_if_exists: Some(file),
+                ..
+            } = &common_example.kind
+            {
+                target_path.join(file).exists()
+            } else {
+                false
+            }
+        };
+
+        if !skip {
+            instantiate_example(
+                common_example,
+                &parameters,
+                TargetExistsResolveMode::MergeOrSkip,
+            )?;
+        }
     }
 
     instantiate_example(
@@ -450,6 +464,7 @@ fn parse_example(
         (None, None) => ExampleKind::Standalone,
         (Some(group), None) => ExampleKind::ComposableAppCommon {
             group: ComposableAppGroupName::from_string(group),
+            skip_if_exists: metadata.app_common_skip_if_exists.map(PathBuf::from),
         },
         (None, Some(group)) => ExampleKind::ComposableAppComponent {
             group: ComposableAppGroupName::from_string(group),
