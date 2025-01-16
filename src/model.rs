@@ -15,7 +15,7 @@ use strum_macros::EnumIter;
 )]
 pub struct ComponentName(String);
 
-static COMPONENT_NAME_SPLIT_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new("(?=[A-Z\\-_])").unwrap());
+static COMPONENT_NAME_SPLIT_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new("(?=[A-Z\\-_:])").unwrap());
 
 impl ComponentName {
     pub fn new(name: impl AsRef<str>) -> ComponentName {
@@ -45,6 +45,7 @@ impl ComponentName {
             let s = part.to_lowercase();
             let s = s.strip_prefix('-').unwrap_or(&s);
             let s = s.strip_prefix('_').unwrap_or(s);
+            let s = s.strip_prefix(':').unwrap_or(s);
             result.push(s.to_string());
         }
         result
