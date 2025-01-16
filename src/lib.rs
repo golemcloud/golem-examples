@@ -169,7 +169,7 @@ pub fn add_component_by_example(
     package_name: &PackageName,
 ) -> io::Result<()> {
     let parameters = ExampleParameters {
-        component_name: ComponentName::new(package_name.to_kebab_case()),
+        component_name: ComponentName::new(package_name.to_string_with_colon()),
         package_name: package_name.clone(),
         target_path: target_path.into(),
     };
