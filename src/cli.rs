@@ -1,6 +1,9 @@
 use clap::*;
 
-use crate::model::{ComponentName, ExampleName, GuestLanguage, GuestLanguageTier, PackageName};
+use crate::model::{
+    ComponentName, ComposableAppGroupName, ExampleName, GuestLanguage, GuestLanguageTier,
+    PackageName,
+};
 
 #[derive(Args, Debug)]
 #[group(required = true, multiple = false)]
@@ -21,7 +24,7 @@ impl NameOrLanguage {
             .clone()
             .unwrap_or(ExampleName::from_string(format!(
                 "{}-default",
-                self.language.clone().unwrap_or(GuestLanguage::Rust).id()
+                self.language.unwrap_or(GuestLanguage::Rust).id()
             )))
     }
 }
@@ -53,6 +56,27 @@ pub enum Command {
         /// Filter examples by a given guest language
         #[arg(short, long, alias = "lang")]
         language: Option<GuestLanguage>,
+    },
+
+    /// Lists the built-in composable app templates available for creating new components
+    #[command()]
+    ListAppExamples {
+        /// Filter examples by a given guest language
+        #[arg(short, long, alias = "lang")]
+        language: Option<GuestLanguage>,
+
+        /// Filter examples by a given composable group name
+        #[arg(short, long, alias = "group")]
+        group: Option<ComposableAppGroupName>,
+    },
+
+    NewAppComponent {
+        /// The component name (and package name) of the generated component (in namespace:name format)
+        component_name: PackageName,
+
+        /// Component language
+        #[arg(short, long, alias = "lang")]
+        language: GuestLanguage,
     },
 }
 

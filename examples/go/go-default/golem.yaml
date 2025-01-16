@@ -12,6 +12,10 @@ components:
     linkedWasm: build/linked-components/component_name_linked.wasm
     build:
     - command: wit-bindgen tiny-go --rename-package binding --out-dir binding ./wit-generated
+      rmdirs:
+      - binding
+      mkdirs:
+      - binding
       sources:
       - wit-generated
       targets:

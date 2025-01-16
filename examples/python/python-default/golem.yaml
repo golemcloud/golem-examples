@@ -26,3 +26,5 @@ components:
       - main.py
       targets:
       - build/components/component_name.wasm
+    clean:
+    - bindings

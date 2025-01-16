@@ -7,7 +7,7 @@ bindings:
 	wit-bindgen c --autodrop-borrows yes  --out-dir component_name  ./wit
 
 compile: bindings
-	${WASI_SDK}/bin/clang --sysroot ${WASI_SDK}/share/wasi-sysroot main.c component_name/component_name.c component_name/component_name_component_type.o -o component_name.module.wasm
+	${WASI_SDK_PATH}/bin/clang --sysroot ${WASI_SDK_PATH}/share/wasi-sysroot main.c component_name/component_name.c component_name/component_name_component_type.o -o component_name.module.wasm
 
 clean:
 	rm -rf component_name
