@@ -2,7 +2,7 @@
 
 This repository contains all the *template examples* available for the `golem` CLI tool using via the `golem new` command.
 
-> [!CAUTION] 
+> [!CAUTION]
 > **While some template examples might work as they are, using them directly is not supported.**
 
 See the example templates section on the [Golem CLI page](https://www.golem.cloud/learn/golem-cli).
@@ -27,8 +27,8 @@ The following fields are required:
 The following fields are optional:
 
 - `requiresAdapter` is a boolean, defaults to **true**. If true, the appropriate version of the WASI Preview2 to Preview1 adapter is copied into the generated project (based on the guest language) to an `adapters` directory.
-- `adapterTarget` is an optional directory path that overrides the default `adapter` directory, when set and `requiresAdapter` is not, then the latter is implicitly set to **true** 
-- `requiresGolemHostWIT` is a boolean, defaults to **false**. If true, the Golem specific WIT interface gets copied into `wit/deps`. 
+- `adapterTarget` is an optional directory path that overrides the default `adapter` directory, when set and `requiresAdapter` is not, then the latter is implicitly set to **true**
+- `requiresGolemHostWIT` is a boolean, defaults to **false**. If true, the Golem specific WIT interface gets copied into `wit/deps`.
 - `requiresWASI` is a boolean, defaults to **false**. If true, the WASI Preview2 WIT interfaces which are compatible with Golem Cloud get copied into `wit/deps`.
 - `witDepsPaths` is an array of directory paths, defaults to **null**. When set, overrides the `wit/deps` directory for the above options and allows to use multiple target dirs for supporting multi-component examples.
 - `exclude` is a list of sub-paths and works as a simplified `.gitignore` file. It's primary purpose is to help the development loop of working on examples and in the future it will likely be dropped in favor of just using `.gitignore` files.
@@ -67,13 +67,13 @@ The example generation and instructions can be tested with a test [cli app](/src
 The app also accepts a filter argument, which matches for the example name as regular expressions, eg. to test the go examples use:
 
 ```shell
-cargo run --bin golem-examples-test-cli examples -- -f go
+cargo run --bin golem-examples-test-cli -- examples -f go
 ```
 
 Or to exactly match an example name:
 
 ```shell
-cargo run --bin golem-examples-test-cli examples -- -f '^go-default$'
+cargo run --bin golem-examples-test-cli -- examples -f '^go-default$'
 ```
 
 The necessary tooling for the specific language is expected to be available.
