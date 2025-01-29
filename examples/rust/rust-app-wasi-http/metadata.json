@@ -1,0 +1,5 @@
+{
+  "description": "Wasi Http Incoming Handler implementation in rust to use with http-handler api definition bindings",
+  "requiresWASI": true,
+  "appComponentGroup": "default"
+}
