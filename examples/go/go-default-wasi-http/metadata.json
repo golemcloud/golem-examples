@@ -1,5 +1,5 @@
 {
-  "description": "A stateful Golem worker written in Go with full support for WASI and Golem runtime APIs",
+  "description": "A Golem worker implementing wasi:http/incoming-handler. For use with the http-handler api gateway binding type",
   "requiresAdapter": true,
   "adapterTarget": "adapters",
   "requiresGolemHostWIT": true,
