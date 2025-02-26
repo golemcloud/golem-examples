@@ -1,3 +1,6 @@
+> [!NOTE]
+> **Moved to: [https://github.com/golemcloud/golem-cli](golem-cli)**
+
 # Golem Cloud example templates
 
 This repository contains all the *template examples* available for the `golem` CLI tool using via the `golem new` command.
